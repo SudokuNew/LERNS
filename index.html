@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <title>LERNS — Test Planner</title>
+
+    <!-- Mobile / PWA meta -->
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="#0BDAFF">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="/icons/lerns-180.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/icons/favicon-32.png" sizes="32x32">
+
+    <!-- Basic styles (can move to /css/style.css) -->
+    <style>
+        :root {
+            --bg: #f8fbff;
+            --primary: #0B2E57;
+            --muted: #275c6a;
+            --hero-start: #bff0ff;
+            --hero-end: #dff9ff;
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            background: var(--bg);
+            font-family: system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Segoe UI", Roboto, Arial;
+            color: #07203a
+        }
+
+        .app {
+            min-height: 100vh;
+            padding: calc(16px + var(--safe-top)) 16px calc(24px + var(--safe-bottom));
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px
+        }
+
+        /* Hero */
+        .top-hero .hero-bg {
+            background: linear-gradient(180deg, var(--hero-start), var(--hero-end));
+            position: relative;
+            padding: 28px 16px 48px;
+            border-radius: 12px;
+            overflow: hidden
+        }
+
+        .hero-icon {
+            position: absolute;
+            right: -8%;
+            top: 8%;
+            width: 320px;
+            opacity: 0.08;
+            transform: rotate(-12deg);
+            pointer-events: none
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1
+        }
+
+        .hero-content h1 {
+            margin: 0;
+            font-size: 22px;
+            color: #053145
+        }
+
+        .subtitle {
+            margin-top: 6px;
+            color: var(--muted)
+        }
+
+        /* Actions */
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            padding: 16px
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            border: 0;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer
+        }
+
+        /* Summary */
+        #stats {
+            padding: 12px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(11, 46, 87, 0.06)
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1200
+        }
+
+        .modal[aria-hidden="false"] {
+            display: flex
+        }
+
+        .modal-panel {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            max-width: 92%;
+            width: 420px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18)
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 12px
+        }
+
+        /* Intro overlay */
+        .intro-overlay {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4));
+            z-index: 2000;
+            padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom)
+        }
+
+        .intro-video {
+            width: 100%;
+            max-width: 900px;
+            border-radius: 16px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+            background: #000
+        }
+
+        .intro-controls {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            display: flex;
+            gap: 8px
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 0;
+            cursor: pointer;
+            font-weight: 600
+        }
+
+        .btn.ghost {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff
+        }
+
+        .btn.primary {
+            background: var(--primary);
+            color: #fff
+        }
+
+        .btn.unmute {
+            background: #fff;
+            color: var(--primary);
+            display: none
+        }
+
+        @media(min-width:720px) {
+            .hero-content h1 {
+                font-size: 28px
+            }
+
+            .quick-actions {
+                gap: 16px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Intro Video Overlay (plays once by default) -->
+    <div id="intro-overlay" class="intro-overlay" aria-hidden="false">
+        <video id="intro-video" class="intro-video" playsinline muted preload="auto" poster="/media/intro-poster.jpg"
+            crossorigin="anonymous">
+            <source src="/media/intro.mp4" type="video/mp4">
+        </video>
+        <div class="intro-controls">
+            <button id="skip-btn" class="btn ghost" aria-label="スキップ">Skip</button>
+            <button id="unmute-btn" class="btn unmute" aria-hidden="true">Enable Sound</button>
+        </div>
+    </div>
+
+    <!-- App main -->
+    <div class="app" id="app" role="application" aria-label="LERNS learning app">
+        <header class="top-hero">
+            <div class="hero-bg">
+                <img class="hero-icon" src="/icons/lerns-192.png" alt="" aria-hidden="true">
+                <div class="hero-content">
+                    <h1>定期テスト プランナー</h1>
+                    <p class="subtitle">勉強時間を記録して、計画を着実に進めよう</p>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section class="quick-actions" aria-label="主な操作">
+                <button id="btn-log-time" class="action-btn" aria-controls="log-time-modal">勉強時間を記録</button>
+                <button id="btn-view-schedule" class="action-btn" aria-controls="schedule-modal">計画表を見る</button>
+            </section>
+
+            <section style="padding:0 16px">
+                <div id="stats">
+                    <div id="total-time">合計学習時間: 0 分</div>
+                </div>
+            </section>
+        </main>
+
+        <footer style="text-align:center;color:var(--muted);font-size:12px;margin-top:auto;padding:12px">Local mode ·
+            For personal use</footer>
+    </div>
+
+    <!-- Modals -->
+    <div id="log-time-modal" class="modal" role="dialog" aria-hidden="true" aria-labelledby="log-time-title">
+        <div class="modal-panel">
+            <h2 id="log-time-title">勉強時間を記録</h2>
+            <label style="display:block;margin-top:8px">科目
+                <select id="subject-select" style="width:100%;padding:8px;margin-top:6px">
+                    <option>数学</option>
+                    <option>英語</option>
+                    <option>国語</option>
+                    <option>理科</option>
+                </select>
+            </label>
+            <label style="display:block;margin-top:8px">時間（分）
+                <input id="study-minutes" type="number" min="1" value="30"
+                    style="width:100%;padding:8px;margin-top:6px">
+            </label>
+            <div class="modal-actions">
+                <button id="save-time" class="btn primary">保存</button>
+                <button class="btn" data-action="close-modal">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="schedule-modal" class="modal" role="dialog" aria-hidden="true" aria-labelledby="schedule-title">
+        <div class="modal-panel">
+            <h2 id="schedule-title">計画表</h2>
+            <div id="schedule-content" style="margin-top:10px;max-height:50vh;overflow:auto"></div>
+            <div class="modal-actions">
+                <button class="btn" data-action="close-modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        /* Service worker registration (PWA) */
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js').catch(() => {/* ignore */ });
+        }
+
+        /* App logic: logs, UI, modals */
+        (function () {
+            const LOG_KEY = 'lerns_logs';
+            function readLogs() { try { return JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); } catch (e) { return []; } }
+            function writeLogs(logs) { localStorage.setItem(LOG_KEY, JSON.stringify(logs)); renderStats(); }
+            function renderStats() {
+                const logs = readLogs();
+                const total = logs.reduce((s, l) => s + (l.minutes || 0), 0);
+                const el = document.getElementById('total-time');
+                if (el) el.textContent = `合計学習時間: ${total} 分`;
+            }
+
+            function openModal(modal) { modal.setAttribute('aria-hidden', 'false'); modal.querySelector('input,select,button')?.focus(); document.body.style.overflow = 'hidden'; }
+            function closeModal(modal) { modal.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                renderStats();
+
+                const btnLog = document.getElementById('btn-log-time');
+                const btnSchedule = document.getElementById('btn-view-schedule');
+                const logModal = document.getElementById('log-time-modal');
+                const scheduleModal = document.getElementById('schedule-modal');
+
+                btnLog.addEventListener('click', () => openModal(logModal));
+                btnSchedule.addEventListener('click', () => { renderSchedule(); openModal(scheduleModal); });
+
+                document.querySelectorAll('[data-action="close-modal"]').forEach(b => {
+                    b.addEventListener('click', e => closeModal(e.target.closest('.modal')));
+                });
+
+                document.getElementById('save-time').addEventListener('click', () => {
+                    const subject = document.getElementById('subject-select').value;
+                    const minutes = parseInt(document.getElementById('study-minutes').value, 10) || 0;
+                    const logs = readLogs();
+                    logs.push({ subject, minutes, at: new Date().toISOString() });
+                    writeLogs(logs);
+                    alert('保存しました');
+                    closeModal(logModal);
+                });
+
+                function renderSchedule() {
+                    const container = document.getElementById('schedule-content');
+                    const logs = readLogs();
+                    if (logs.length === 0) {
+                        container.innerHTML = '<p>記録がありません</p>';
+                        return;
+                    }
+                    const list = logs.map(l => {
+                        const t = new Date(l.at);
+                        return `<div style="padding:8px;border-bottom:1px solid #eee"><strong>${l.subject}</strong> — ${l.minutes} 分<div style="font-size:12px;color:#666">${t.toLocaleString()}</div></div>`;
+                    }).join('');
+                    container.innerHTML = list;
+                }
+            });
+        })();
+
+        /* Intro video overlay logic: try autoplay muted, allow skip/unmute, show only once */
+        (function () {
+            const INTRO_KEY = 'lerns_intro_shown';
+            try { if (localStorage.getItem(INTRO_KEY)) { document.getElementById('intro-overlay')?.remove(); } } catch (e) { }
+            const overlay = document.getElementById('intro-overlay');
+            const video = document.getElementById('intro-video');
+            const skipBtn = document.getElementById('skip-btn');
+            const unmuteBtn = document.getElementById('unmute-btn');
+            if (!overlay || !video) return;
+
+            const closeOverlay = () => { try { video.pause(); } catch (e) { } overlay.style.display = 'none'; overlay.setAttribute('aria-hidden', 'true'); try { localStorage.setItem(INTRO_KEY, '1'); } catch (e) { } };
+            skipBtn.addEventListener('click', closeOverlay);
+            unmuteBtn.addEventListener('click', () => {
+                try { video.muted = false; video.play().catch(() => { }); } catch (e) { } setTimeout(closeOverlay, 600);
+            });
+            video.addEventListener('ended', closeOverlay);
+
+            const tryPlay = async () => {
+                try {
+                    await video.play();
+                    setTimeout(() => { unmuteBtn.style.display = 'inline-block'; }, 500);
+                } catch (e) {
+                    unmuteBtn.style.display = 'inline-block';
+                }
+            };
+            document.addEventListener('DOMContentLoaded', tryPlay);
+        })();
+    </script>
+</body>
+
+</html>
