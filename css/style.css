@@ -119,7 +119,6 @@ body {
     }
 }
 
-
 /* アクションボタン */
 .quick-actions {
     display: flex;
@@ -137,6 +136,137 @@ body {
     font-weight: 700;
     cursor: pointer
 }
+
+/* レイアウト */
+.video-controls-area {
+    margin-top: 1rem;
+}
+
+.video-controls-top {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-start;
+    margin-bottom: 8px;
+}
+
+.action-btn.small {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+}
+
+/* プレイヤー領域 */
+.video-wrapper {
+    display: none;
+    animation: fadeIn 0.35s ease-out forwards;
+    background: var(--surface, #fff);
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* 下部の再生ボタン配置 */
+.video-controls-bottom {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+/* アクセシビリティ：画面上は見えないがスクリーンリーダーに見えるラベル */
+.visually-hidden {
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap;
+}
+
+/* アニメーション */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ボタンスタイルの軽い補助（既存の .action-btn と衝突しないよう最小限）*/
+.action-btn.primary {
+    background: #2b82ff;
+    color: #fff;
+    border-radius: 6px;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+}
+
+/* 統一した基礎スタイル（濃い色）*/
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0.6rem 1rem;
+    border-radius: 12px;
+    border: 0;
+    background: var(--primary);
+    /* #0B2E57 を参照 */
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 160ms ease, transform 120ms ease;
+}
+
+/* ホバー / アクティブ */
+.action-btn:hover {
+    background-color: color-mix(in srgb, var(--primary) 80%, #000 20%);
+}
+
+.action-btn:active {
+    transform: translateY(1px);
+}
+
+/* 小さめボタン */
+.action-btn.small {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+}
+
+/* 役割別：二次的に淡色にしたい場合 */
+.action-btn.secondary {
+    background: #f1f5f9;
+    color: #07203a;
+    border: 1px solid #e2e8f0;
+}
+
+.action-btn.secondary:hover {
+    filter: brightness(0.98);
+}
+
+/* 主要アクション（青系）*/
+.action-btn.primary {
+    background: #2b82ff;
+    color: #fff;
+    border-radius: 8px;
+}
+
+/* 小さいスクリーンでの見え方微調整（任意）*/
+@media (max-width:420px) {
+    .action-btn {
+        padding: 0.56rem 0.9rem;
+        font-size: 0.95rem;
+    }
+}
+
+.action-btn:hover {
+    filter: brightness(0.98);
+}
+
 
 /* サマリー */
 #stats {
