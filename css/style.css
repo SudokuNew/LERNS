@@ -66,6 +66,60 @@ body {
     color: var(--muted)
 }
 
+.fade-in-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.fade-in-on-load-1 {
+    animation: fadeInOnLoad 1.2s ease-out forwards;
+}
+
+.fade-in-on-load2 {
+    animation: fadeInOnLoad 1.7s ease-out forwards;
+}
+
+.fade-in-on-load3 {
+    animation: fadeInOnLoad 2.0s ease-out forwards;
+}
+
+@keyframes fadeInOnLoad {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.pdf-wrapper {
+    margin-top: 1rem;
+    display: none;
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
 /* アクションボタン */
 .quick-actions {
     display: flex;
@@ -173,4 +227,46 @@ body {
     background: #fff;
     color: var(--primary);
     display: none
+}
+
+.bg-fixed {
+    position: fixed;
+    inset: 0;
+    /* top:0; right:0; bottom:0; left:0; */
+    pointer-events: none;
+    /* 背景がクリックを邪魔しない */
+    z-index: 0;
+    /* .app より下に来るように調整 */
+    background-image: url('/icons/lerns-bg.png');
+    background-repeat: no-repeat;
+    background-position: right 10% top 8%;
+    /* 位置調整 */
+    background-size: 40vw;
+    /* 適宜調整（px や % でも可） */
+    opacity: 0.08;
+    /* 背後にうっすら見せる */
+    will-change: transform;
+    /* ブラウザ最適化のヒント */
+    mix-blend-mode: normal;
+    /* 必要なら調整 */
+}
+
+.app {
+    position: relative;
+    z-index: 1
+}
+
+@media (max-width:420px) {
+    .bg-fixed {
+        background-size: 60vw;
+        background-position: center top;
+        opacity: 0.06;
+    }
+}
+
+@media (min-width:1280px) {
+    .bg-fixed {
+        background-size: 560px;
+        background-position: right 6% top 12%;
+    }
 }

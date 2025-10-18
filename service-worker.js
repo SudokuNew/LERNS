@@ -33,3 +33,21 @@ self.addEventListener('fetch', evt => {
         })).catch(() => caches.match('/index.html'))
     );
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const targets = document.querySelectorAll('.fade-in-on-scroll');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target); // 一度だけ表示したい場合
+            }
+        });
+    }, {
+        threshold: 0.2 // 20%見えたら発火
+    });
+
+    targets.forEach(target => observer.observe(target));
+});
+
