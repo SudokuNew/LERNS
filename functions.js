@@ -184,3 +184,190 @@ if ('serviceWorker' in navigator) {
     };
     document.addEventListener('DOMContentLoaded', tryPlay);
 })();
+
+/* Timer module */
+(function () {
+    const STORAGE_KEY = 'study_timer_state_v1';
+
+    const el = {
+        section: document.getElementById('studyTimerSection'),
+        time: document.getElementById('timerTime'),
+        mode: document.getElementById('timerMode'),
+        btnStart: document.getElementById('timerStart'),
+        btnPause: document.getElementById('timerPause'),
+        btnReset: document.getElementById('timerReset'),
+        presets: document.querySelectorAll('.timer-preset'),
+        soundOpt: document.getElementById('timerSound'),
+        vibrateOpt: document.getElementById('timerVibrate')
+    };
+    if (!el.section) return;
+
+    // state
+    let duration = 25 * 60; // seconds
+    let remaining = duration;
+    let timerId = null;
+    let running = false;
+
+    // simple beep (Web Audio)
+    let audioCtx = null;
+    function playBeep() {
+        if (!el.soundOpt.checked) return;
+        try {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.type = 'sine';
+            o.frequency.value = 880;
+            g.gain.value = 0.08;
+            o.connect(g); g.connect(audioCtx.destination);
+            o.start();
+            setTimeout(() => {
+                o.stop();
+            }, 300);
+        } catch (e) { /* ignore */ }
+    }
+
+    function vibrate() {
+        if (el.vibrateOpt.checked && navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    }
+
+    function formatTime(sec) {
+        const m = Math.floor(sec / 60).toString().padStart(2, '0');
+        const s = (sec % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    }
+
+    function render() {
+        el.time.textContent = formatTime(remaining);
+    }
+
+    function tick() {
+        if (remaining <= 0) {
+            stopTimer();
+            playBeep();
+            vibrate();
+            el.section.classList.add('timer-done');
+            // 視覚的に数秒ハイライト
+            setTimeout(() => el.section.classList.remove('timer-done'), 3000);
+            // Notification API（権限があれば）
+            if (window.Notification && Notification.permission === 'granted') {
+                try { new Notification('タイマー完了', { body: '時間になりました。休憩や次のタスクへ移ってください。' }); } catch (e) { }
+            }
+            return;
+        }
+        remaining--;
+        render();
+        persistState();
+    }
+
+    function startTimer() {
+        if (running) return;
+        running = true;
+        el.btnStart.disabled = true;
+        el.btnPause.disabled = false;
+        // resume AudioContext on user gesture
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => { });
+        timerId = setInterval(tick, 1000);
+        persistState();
+    }
+
+    function pauseTimer() {
+        if (!running) return;
+        running = false;
+        el.btnStart.disabled = false;
+        el.btnPause.disabled = true;
+        clearInterval(timerId); timerId = null;
+        persistState();
+    }
+
+    function stopTimer() {
+        running = false;
+        clearInterval(timerId); timerId = null;
+        el.btnStart.disabled = false;
+        el.btnPause.disabled = true;
+        persistState();
+    }
+
+    function resetTimer() {
+        remaining = duration;
+        render();
+        stopTimer();
+        persistState();
+    }
+
+    function setDurationFromMinutes(min, label) {
+        duration = Math.max(1, Math.floor(min)) * 60;
+        remaining = duration;
+        el.mode.textContent = label || `${min}分`;
+        render();
+        persistState();
+    }
+
+    function persistState() {
+        const state = {
+            duration, remaining, running, timestamp: Date.now(), modeText: el.mode.textContent,
+            sound: !!el.soundOpt.checked, vibrate: !!el.vibrateOpt.checked
+        };
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { }
+    }
+
+    function restoreState() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            const s = JSON.parse(raw);
+            if (!s) return;
+            duration = s.duration || duration;
+            remaining = s.remaining ?? duration;
+            el.mode.textContent = s.modeText || el.mode.textContent;
+            el.soundOpt.checked = !!s.sound;
+            el.vibrateOpt.checked = !!s.vibrate;
+            render();
+            if (s.running) {
+                // If was running, resume but compensate for elapsed time
+                const elapsed = Math.floor((Date.now() - (s.timestamp || Date.now())) / 1000);
+                remaining = Math.max(0, (s.remaining ?? duration) - elapsed);
+                if (remaining === 0) {
+                    render();
+                    return;
+                }
+                startTimer();
+            }
+        } catch (e) { /* ignore */ }
+    }
+
+    // event wiring
+    el.btnStart.addEventListener('click', () => {
+        // request Notification permission on first user action
+        if (window.Notification && Notification.permission === 'default') {
+            Notification.requestPermission().catch(() => { });
+        }
+        startTimer();
+    });
+    el.btnPause.addEventListener('click', () => pauseTimer());
+    el.btnReset.addEventListener('click', () => resetTimer());
+
+    el.presets.forEach(btn => {
+        btn.addEventListener('click', (ev) => {
+            const min = Number(btn.dataset.min) || 25;
+            const label = btn.textContent.trim();
+            setDurationFromMinutes(min, label);
+        });
+    });
+
+    // keyboard accessibility: space/enter on section toggles start/pause
+    el.section.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' || e.key === ' ') { e.preventDefault(); if (running) pauseTimer(); else startTimer(); }
+        if (e.key === 'r' || e.key === 'R') { resetTimer(); }
+    });
+
+    // init
+    render();
+    restoreState();
+
+    // expose for debugging (optional)
+    window.__studyTimer = {
+        setMinutes: (m) => setDurationFromMinutes(m, `${m}分`),
+        getState: () => ({ duration, remaining, running })
+    };
+})();

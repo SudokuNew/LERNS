@@ -90,7 +90,7 @@
                             </select>
 
                             <iframe id="videoFrame" width="100%" height="315"
-                                src="https://www.youtube.com/embed/F-hhrQ3BjRI?rel=0" title="勉強用動画" frameborder="0"
+                                src="https://www.youtube.com/embed/4YUwV8kIYdc?rel=0" title="勉強用動画" frameborder="0"
                                 allow="autoplay; encrypted-media" allowfullscreen tabindex="-1"></iframe>
 
                             <div class="video-controls-bottom">
@@ -100,7 +100,30 @@
                         </div>
                     </div>
 
+                </section>
 
+                <section class="timer" aria-label="学習タイマー" id="studyTimerSection">
+                    <div class="timer-display" aria-live="polite">
+                        <div class="time-large" id="timerTime">25:00</div>
+                        <div class="timer-mode" id="timerMode">ポモドーロ</div>
+                    </div>
+
+                    <div class="timer-controls">
+                        <button id="timerStart" class="action-btn">開始</button>
+                        <button id="timerPause" class="action-btn" disabled>一時停止</button>
+                        <button id="timerReset" class="action-btn">リセット</button>
+                    </div>
+
+                    <div class="timer-presets">
+                        <button class="action-btn small timer-preset" data-min="25">Pomo 25</button>
+                        <button class="action-btn small timer-preset" data-min="50">集中 50</button>
+                        <button class="action-btn small timer-preset" data-min="15">休憩 15</button>
+                    </div>
+
+                    <div class="timer-options">
+                        <label><input type="checkbox" id="timerSound" checked> 音で通知</label>
+                        <label><input type="checkbox" id="timerVibrate"> バイブ（モバイル）</label>
+                    </div>
                 </section>
             </main>
 
