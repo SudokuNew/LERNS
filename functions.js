@@ -185,189 +185,164 @@ if ('serviceWorker' in navigator) {
     document.addEventListener('DOMContentLoaded', tryPlay);
 })();
 
-/* Timer module */
+/* Pomodoro 自動サイクル拡張 */
 (function () {
-    const STORAGE_KEY = 'study_timer_state_v1';
+    // 要素
+    const pomPhaseEl = document.getElementById('pomPhase');
+    const pomCountEl = document.getElementById('pomCount');
+    const cfgWork = document.getElementById('cfgWork');
+    const cfgShort = document.getElementById('cfgShort');
+    const cfgLong = document.getElementById('cfgLong');
+    const cfgInterval = document.getElementById('cfgInterval');
+    const cfgAutoNext = document.getElementById('cfgAutoNext');
 
-    const el = {
-        section: document.getElementById('studyTimerSection'),
-        time: document.getElementById('timerTime'),
-        mode: document.getElementById('timerMode'),
-        btnStart: document.getElementById('timerStart'),
-        btnPause: document.getElementById('timerPause'),
-        btnReset: document.getElementById('timerReset'),
-        presets: document.querySelectorAll('.timer-preset'),
-        soundOpt: document.getElementById('timerSound'),
-        vibrateOpt: document.getElementById('timerVibrate')
+    if (!pomPhaseEl || !pomCountEl) {
+        // 必要な要素がなければ何もしない
+        return;
+    }
+
+    // 現在のフェーズ列挙
+    const PHASE = { WORK: 'work', SHORT: 'short', LONG: 'long' };
+
+    // state 拡張
+    let pomState = {
+        phase: PHASE.WORK,
+        cycleCount: 0,        // 作業フェーズが完了した回数（サイクルカウンタ）
+        completedCycles: 0,   // 完了した作業回数の累積（任意）
+        config: {
+            work: Number(cfgWork?.value) || 25,
+            short: Number(cfgShort?.value) || 5,
+            long: Number(cfgLong?.value) || 15,
+            interval: Number(cfgInterval?.value) || 4,
+            autoNext: !!(cfgAutoNext?.checked)
+        }
     };
-    if (!el.section) return;
 
-    // state
-    let duration = 25 * 60; // seconds
-    let remaining = duration;
-    let timerId = null;
-    let running = false;
+    const STORAGE_KEY_POM = 'study_pom_state_v1';
 
-    // simple beep (Web Audio)
-    let audioCtx = null;
-    function playBeep() {
-        if (!el.soundOpt.checked) return;
-        try {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const o = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
-            o.type = 'sine';
-            o.frequency.value = 880;
-            g.gain.value = 0.08;
-            o.connect(g); g.connect(audioCtx.destination);
-            o.start();
+    // ユーティリティ：現在のフェーズに応じた分数を返す
+    function minutesForPhase(phase) {
+        if (phase === PHASE.WORK) return pomState.config.work;
+        if (phase === PHASE.SHORT) return pomState.config.short;
+        return pomState.config.long;
+    }
+
+    // フェーズ表示更新
+    function renderPomMeta() {
+        pomPhaseEl.textContent = `フェーズ: ${pomState.phase === PHASE.WORK ? '作業' : pomState.phase === PHASE.SHORT ? '短休憩' : '長休憩'}`;
+        pomCountEl.textContent = `サイクル: ${pomState.cycleCount}`;
+    }
+
+    // 設定変更時の反映
+    function applySettingsToTimer() {
+        pomState.config.work = Math.max(1, Number(cfgWork.value) || 25);
+        pomState.config.short = Math.max(1, Number(cfgShort.value) || 5);
+        pomState.config.long = Math.max(1, Number(cfgLong.value) || 15);
+        pomState.config.interval = Math.max(1, Number(cfgInterval.value) || 4);
+        pomState.config.autoNext = !!cfgAutoNext.checked;
+
+        // 現在のフェーズの duration を更新（remaining を相対保つ場合は調整可）
+        duration = minutesForPhase(pomState.phase) * 60;
+        remaining = Math.min(remaining, duration);
+        render();
+        persistAll();
+    }
+
+    // フェーズ遷移（自動サイクルロジック）
+    function advancePhaseOnFinish() {
+        if (pomState.phase === PHASE.WORK) {
+            pomState.cycleCount += 1;
+            pomState.completedCycles += 1;
+            // long break 判定
+            if (pomState.cycleCount % pomState.config.interval === 0) {
+                pomState.phase = PHASE.LONG;
+            } else {
+                pomState.phase = PHASE.SHORT;
+            }
+        } else {
+            // 休憩が終わったら作業に戻る
+            pomState.phase = PHASE.WORK;
+        }
+
+        // 新しいフェーズの長さをセット
+        duration = minutesForPhase(pomState.phase) * 60;
+        remaining = duration;
+        renderPomMeta();
+        render(); // タイマー表示を更新
+        persistAll();
+
+        // 自動で次に進むかどうか
+        if (pomState.config.autoNext) {
+            // 少し待ってから自動開始（視覚的区切りをつける）
             setTimeout(() => {
-                o.stop();
-            }, 300);
+                startTimer(); // startTimer は既存タイマーモジュールで定義されている関数
+            }, 800);
+        } else {
+            // 自動開始しない場合は一旦停止してユーザー操作を待つ
+            stopTimer();
+        }
+    }
+
+    // 永続化（既存 persistState と合わせる）
+    function persistAll() {
+        try {
+            const st = {
+                pom: pomState,
+                timer: { duration, remaining, running, timestamp: Date.now() }
+            };
+            localStorage.setItem(STORAGE_KEY_POM, JSON.stringify(st));
         } catch (e) { /* ignore */ }
     }
 
-    function vibrate() {
-        if (el.vibrateOpt.checked && navigator.vibrate) navigator.vibrate([200, 100, 200]);
-    }
-
-    function formatTime(sec) {
-        const m = Math.floor(sec / 60).toString().padStart(2, '0');
-        const s = (sec % 60).toString().padStart(2, '0');
-        return `${m}:${s}`;
-    }
-
-    function render() {
-        el.time.textContent = formatTime(remaining);
-    }
-
-    function tick() {
-        if (remaining <= 0) {
-            stopTimer();
-            playBeep();
-            vibrate();
-            el.section.classList.add('timer-done');
-            // 視覚的に数秒ハイライト
-            setTimeout(() => el.section.classList.remove('timer-done'), 3000);
-            // Notification API（権限があれば）
-            if (window.Notification && Notification.permission === 'granted') {
-                try { new Notification('タイマー完了', { body: '時間になりました。休憩や次のタスクへ移ってください。' }); } catch (e) { }
-            }
-            return;
-        }
-        remaining--;
-        render();
-        persistState();
-    }
-
-    function startTimer() {
-        if (running) return;
-        running = true;
-        el.btnStart.disabled = true;
-        el.btnPause.disabled = false;
-        // resume AudioContext on user gesture
-        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => { });
-        timerId = setInterval(tick, 1000);
-        persistState();
-    }
-
-    function pauseTimer() {
-        if (!running) return;
-        running = false;
-        el.btnStart.disabled = false;
-        el.btnPause.disabled = true;
-        clearInterval(timerId); timerId = null;
-        persistState();
-    }
-
-    function stopTimer() {
-        running = false;
-        clearInterval(timerId); timerId = null;
-        el.btnStart.disabled = false;
-        el.btnPause.disabled = true;
-        persistState();
-    }
-
-    function resetTimer() {
-        remaining = duration;
-        render();
-        stopTimer();
-        persistState();
-    }
-
-    function setDurationFromMinutes(min, label) {
-        duration = Math.max(1, Math.floor(min)) * 60;
-        remaining = duration;
-        el.mode.textContent = label || `${min}分`;
-        render();
-        persistState();
-    }
-
-    function persistState() {
-        const state = {
-            duration, remaining, running, timestamp: Date.now(), modeText: el.mode.textContent,
-            sound: !!el.soundOpt.checked, vibrate: !!el.vibrateOpt.checked
-        };
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { }
-    }
-
-    function restoreState() {
+    // 復元
+    function restoreAll() {
         try {
-            const raw = localStorage.getItem(STORAGE_KEY);
+            const raw = localStorage.getItem(STORAGE_KEY_POM);
             if (!raw) return;
             const s = JSON.parse(raw);
             if (!s) return;
-            duration = s.duration || duration;
-            remaining = s.remaining ?? duration;
-            el.mode.textContent = s.modeText || el.mode.textContent;
-            el.soundOpt.checked = !!s.sound;
-            el.vibrateOpt.checked = !!s.vibrate;
-            render();
-            if (s.running) {
-                // If was running, resume but compensate for elapsed time
-                const elapsed = Math.floor((Date.now() - (s.timestamp || Date.now())) / 1000);
-                remaining = Math.max(0, (s.remaining ?? duration) - elapsed);
-                if (remaining === 0) {
-                    render();
-                    return;
-                }
-                startTimer();
+            if (s.pom) {
+                pomState = Object.assign(pomState, s.pom);
             }
+            if (s.timer) {
+                duration = s.timer.duration || duration;
+                remaining = s.timer.remaining ?? duration;
+                // running は復元と時間差考慮で resume するロジックを既存 restoreState に合わせて行う
+                if (s.timer.running) {
+                    const elapsed = Math.floor((Date.now() - (s.timer.timestamp || Date.now())) / 1000);
+                    remaining = Math.max(0, (s.timer.remaining ?? duration) - elapsed);
+                    if (remaining > 0) startTimer();
+                }
+            }
+            renderPomMeta();
+            render();
         } catch (e) { /* ignore */ }
     }
 
-    // event wiring
-    el.btnStart.addEventListener('click', () => {
-        // request Notification permission on first user action
-        if (window.Notification && Notification.permission === 'default') {
-            Notification.requestPermission().catch(() => { });
-        }
-        startTimer();
-    });
-    el.btnPause.addEventListener('click', () => pauseTimer());
-    el.btnReset.addEventListener('click', () => resetTimer());
+    // タイマー完了時のハンドラ差し替え（既存 tick 内の完了処理を置換または呼び出す）
+    // 既存の tick または完了処理で下記を呼ぶようにしてください:
+    //   onTimerFinished(); 
+    function onTimerFinished() {
+        // 既存の完了動作（音、振動、通知）は既存コードに任せる
+        // ここではフェーズ遷移を行う
+        advancePhaseOnFinish();
+    }
 
-    el.presets.forEach(btn => {
-        btn.addEventListener('click', (ev) => {
-            const min = Number(btn.dataset.min) || 25;
-            const label = btn.textContent.trim();
-            setDurationFromMinutes(min, label);
-        });
+    // イベント：設定要素に変化があれば反映
+    [cfgWork, cfgShort, cfgLong, cfgInterval, cfgAutoNext].forEach(el => {
+        if (!el) return;
+        el.addEventListener('change', () => applySettingsToTimer());
     });
 
-    // keyboard accessibility: space/enter on section toggles start/pause
-    el.section.addEventListener('keydown', (e) => {
-        if (e.code === 'Space' || e.key === ' ') { e.preventDefault(); if (running) pauseTimer(); else startTimer(); }
-        if (e.key === 'r' || e.key === 'R') { resetTimer(); }
-    });
+    // 初期復元
+    restoreAll();
 
-    // init
-    render();
-    restoreState();
-
-    // expose for debugging (optional)
-    window.__studyTimer = {
-        setMinutes: (m) => setDurationFromMinutes(m, `${m}分`),
-        getState: () => ({ duration, remaining, running })
+    // expose for debugging
+    window.__pom = {
+        state: () => pomState,
+        nextPhase: () => advancePhaseOnFinish(),
+        applySettings: () => applySettingsToTimer()
     };
+
+    // 注意: onTimerFinished を使うには既存タイマーモジュールの完了ルートで onTimerFinished() を呼ぶように統合してください。
 })();

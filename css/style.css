@@ -290,6 +290,35 @@ body {
     border-radius: 8px;
 }
 
+.timer-meta {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+
+.timer-phase,
+.timer-count {
+    font-size: 0.95rem;
+}
+
+.timer-settings {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: #334155;
+}
+
+.timer-settings input[type="number"] {
+    width: 56px;
+    padding: 4px;
+    border-radius: 6px;
+    border: 1px solid #e6eef6;
+}
+
 /* 役割別：二次的に淡色にしたい場合 */
 .action-btn.secondary {
     background: #f1f5f9;

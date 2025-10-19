@@ -124,6 +124,19 @@
                         <label><input type="checkbox" id="timerSound" checked> 音で通知</label>
                         <label><input type="checkbox" id="timerVibrate"> バイブ（モバイル）</label>
                     </div>
+
+                    <div class="timer-meta">
+                        <div id="pomPhase" class="timer-phase">フェーズ: ポモドーロ</div>
+                        <div id="pomCount" class="timer-count">サイクル: 0</div>
+                    </div>
+
+                    <div class="timer-settings">
+                        <label>作業 <input id="cfgWork" type="number" min="1" value="25"> 分</label>
+                        <label>短休憩 <input id="cfgShort" type="number" min="1" value="5"> 分</label>
+                        <label>長休憩 <input id="cfgLong" type="number" min="1" value="15"> 分</label>
+                        <label>長休憩毎 <input id="cfgInterval" type="number" min="1" value="4"></label>
+                        <label><input id="cfgAutoNext" type="checkbox" checked> 自動で次に進む</label>
+                    </div>
                 </section>
             </main>
 
