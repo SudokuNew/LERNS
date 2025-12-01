@@ -1,186 +1,378 @@
 <!doctype html>
 <html lang="ja">
+    <head>
+        <meta charset="utf-8" />
+        <title>LERNS — Test Planner</title>
 
-<head>
-    <meta charset="utf-8">
-    <title>LERNS — Test Planner</title>
+        <meta
+            name="viewport"
+            content="width=device-width,initial-scale=1,viewport-fit=cover"
+        />
+        <meta name="theme-color" content="#0BDAFF" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <link rel="manifest" href="manifest.json" />
+        <link rel="icon" href="icons/lerns_logo_32.png" sizes="32x32" />
+        <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href="icons/lerns_logo_180.png"
+        />
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="css/tabs.css" />
+    </head>
 
-    <!-- Mobile / PWA meta -->
-    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-    <meta name="theme-color" content="#0BDAFF">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="apple-touch-icon" href="/icons/lerns-180.png">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/icons/favicon-32.png" sizes="32x32">
-    <link rel="stylesheet" href="css/style.css">
+    <body>
+        <div class="bg-fixed" aria-hidden="true"></div>
 
-    <!-- Basic styles (can move to /css/style.css) -->
-</head>
+        <!-- ラッパー -->
+        <div class="app-wrapper">
+            <div
+                class="app"
+                id="app"
+                role="application"
+                aria-label="LERNS learning app"
+            >
+                <header class="top-hero">
+                    <div class="hero-bg">
+                        <img
+                            class="hero-icon"
+                            src="icons/lerns_logo_192.png"
+                            alt=""
+                            aria-hidden="true"
+                            style="width: 56px; height: 56px"
+                        />
+                        <div class="hero-content">
+                            <h1 style="margin: 0; font-size: 1.25rem">
+                                L.E.R.N.S.
+                            </h1>
+                            <p class="subtitle" style="margin: 0">
+                                勉強時間を記録して、計画を着実に進めよう
+                            </p>
+                        </div>
+                    </div>
+                </header>
 
-<body>
-    <div class="bg-fixed" aria-hidden="true"></div>
-    <!-- Intro Video Overlay (plays once by default) -->
-    <div class="app">
-        <div id="intro-overlay" class="intro-overlay" aria-hidden="false">
-            <video id="intro-video" class="intro-video" playsinline muted preload="auto"
-                poster="/media/intro-poster.jpg" crossorigin="anonymous">
-                <source src="/media/intro.mp4" type="video/mp4">
-            </video>
-            <div class="intro-controls">
-                <button id="skip-btn" class="btn ghost" aria-label="スキップ">Skip</button>
-                <button id="unmute-btn" class="btn unmute" aria-hidden="true">Enable Sound</button>
+                <main>
+                    <!-- アイコンタブ：ホームを追加 -->
+                    <div class="icon-tabs" role="tablist" aria-label="主な操作">
+                        <!-- 新しいホームタブ（デフォルト選択） -->
+                        <button
+                            class="icon-tab"
+                            id="tab-home"
+                            role="tab"
+                            aria-selected="true"
+                            aria-controls="panel-home"
+                            data-action="home"
+                            title="ホーム"
+                        >
+                            <span class="visually-hidden">ホーム</span>
+                        </button>
+
+                        <!-- 記録タブ -->
+                        <button
+                            class="icon-tab"
+                            id="tab-log"
+                            role="tab"
+                            aria-selected="false"
+                            aria-controls="panel-log"
+                            data-action="log"
+                            title="記録"
+                        >
+                            <span class="visually-hidden">記録</span>
+                        </button>
+
+                        <!-- 計画表タブ -->
+                        <button
+                            class="icon-tab"
+                            id="tab-schedule"
+                            role="tab"
+                            aria-selected="false"
+                            aria-controls="panel-schedule"
+                            data-action="schedule"
+                            title="計画表"
+                        >
+                            <span class="visually-hidden">計画表</span>
+                        </button>
+
+                        <!-- 動画タブ -->
+                        <button
+                            class="icon-tab"
+                            id="tab-video"
+                            role="tab"
+                            aria-selected="false"
+                            aria-controls="panel-video"
+                            data-action="video"
+                            title="動画"
+                        >
+                            <span class="visually-hidden">動画</span>
+                        </button>
+                    </div>
+
+                    <!-- 1. ホームパネル（新設）: タイマーと統計を表示 -->
+                    <section
+                        id="panel-home"
+                        role="tabpanel"
+                        aria-labelledby="tab-home"
+                        class="fade-in-on-scroll visible"
+                    >
+                        <!-- 合計時間表示（Stats） -->
+                        <div id="stats" style="margin-bottom: 16px">
+                            <div id="total-time">合計学習時間: 0 分</div>
+                        </div>
+
+                        <!-- 学習タイマー -->
+                        <section
+                            class="timer"
+                            aria-label="学習タイマー"
+                            id="studyTimerSection"
+                        >
+                            <div class="timer-display" aria-live="polite">
+                                <div class="time-large" id="timerTime">
+                                    25:00
+                                </div>
+                                <div class="timer-mode" id="timerMode">
+                                    ポモドーロ
+                                </div>
+                            </div>
+                            <div class="timer-controls" style="margin-top: 8px">
+                                <button id="timerStart" class="action-btn">
+                                    開始
+                                </button>
+                                <button
+                                    id="timerPause"
+                                    class="action-btn"
+                                    disabled
+                                >
+                                    一時停止
+                                </button>
+                                <button id="timerReset" class="action-btn">
+                                    リセット
+                                </button>
+                            </div>
+                        </section>
+
+                        <p
+                            style="
+                                text-align: center;
+                                color: var(--muted);
+                                margin-top: 24px;
+                                font-size: 0.9rem;
+                            "
+                        >
+                            今日も一日、コツコツ積み上げましょう。
+                        </p>
+                    </section>
+
+                    <!-- 2. 記録パネル -->
+                    <section
+                        id="panel-log"
+                        role="tabpanel"
+                        aria-labelledby="tab-log"
+                        hidden
+                    >
+                        <div style="text-align: center; padding: 2rem 0">
+                            <p
+                                style="
+                                    margin-bottom: 1rem;
+                                    font-weight: bold;
+                                    color: var(--primary);
+                                "
+                            >
+                                学習が終わったら記録しましょう
+                            </p>
+                            <!-- ここに本来モーダルを開くボタンなどを置くのが自然ですが、
+                             既存の実装に合わせて案内文、またはアクションボタンを配置 -->
+                            <button
+                                class="action-btn primary"
+                                onclick="
+                                    document
+                                        .getElementById('log-time-modal')
+                                        .setAttribute('aria-hidden', 'false')
+                                "
+                            >
+                                記録フォームを開く
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- 3. 計画表パネル -->
+                    <section
+                        id="panel-schedule"
+                        role="tabpanel"
+                        aria-labelledby="tab-schedule"
+                        hidden
+                    >
+                        <div
+                            id="pdfViewer"
+                            class="pdf-wrapper"
+                            role="region"
+                            aria-label="計画表"
+                            style="display: block"
+                        >
+                            <iframe
+                                src="docs/plan_grade2_2nd.pdf"
+                                width="100%"
+                                height="600px"
+                                style="border: none; border-radius: 8px"
+                                tabindex="-1"
+                            ></iframe>
+                            <div
+                                style="
+                                    margin-top: 0.5rem;
+                                    text-align: center;
+                                    font-size: 0.9rem;
+                                "
+                            >
+                                <a
+                                    href="docs/plan_grade2_2nd.pdf"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >新しいタブで開く</a
+                                >
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 4. 動画パネル -->
+                    <section
+                        id="panel-video"
+                        role="tabpanel"
+                        aria-labelledby="tab-video"
+                        hidden
+                    >
+                        <div class="video-controls-area" id="videoControlsArea">
+                            <div
+                                id="videoPlayer"
+                                class="video-wrapper"
+                                role="region"
+                                aria-label="勉強用動画"
+                                style="display: block"
+                            >
+                                <label
+                                    for="videoSelect"
+                                    style="
+                                        display: block;
+                                        margin-bottom: 8px;
+                                        font-weight: bold;
+                                    "
+                                    >BGM・環境音を選択</label
+                                >
+                                <select
+                                    id="videoSelect"
+                                    style="
+                                        width: 100%;
+                                        padding: 8px;
+                                        margin-bottom: 12px;
+                                        border-radius: 8px;
+                                        border: 1px solid #ccc;
+                                    "
+                                >
+                                    <option value="nSvZ-PctSVI">
+                                        STARBACKS-集中力を高めるカフェの音
+                                    </option>
+                                    <option value="4YUwV8kIYdc">
+                                        勉強用BGM-生産性の上がる焚火の音
+                                    </option>
+                                    <option value="v-8RqKQPNak">
+                                        勉強用BGM-海岸の焚火の音で集中
+                                    </option>
+                                </select>
+
+                                <iframe
+                                    id="videoFrame"
+                                    width="100%"
+                                    height="315"
+                                    src="https://www.youtube.com/embed/4YUwV8kIYdc?rel=0"
+                                    title="勉強用動画"
+                                    frameborder="0"
+                                    allow="autoplay; encrypted-media"
+                                    allowfullscreen
+                                    tabindex="-1"
+                                    style="border-radius: 8px"
+                                ></iframe>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+
+                <footer
+                    style="
+                        text-align: center;
+                        color: var(--muted);
+                        font-size: 12px;
+                        margin-top: auto;
+                        padding: 12px;
+                    "
+                >
+                    Local mode · For personal use
+                </footer>
             </div>
         </div>
 
-        <!-- App main -->
-        <div class="app" id="app" role="application" aria-label="LERNS learning app">
-            <header class="top-hero fade-in-on-load-1">
-                <div class="hero-bg">
-                    <img class="hero-icon" src="/icons/lerns-192.png" alt="" aria-hidden="true">
-                    <div class="hero-content">
-                        <h1>L.E.R.N.S.</h1>
-                        <p class="subtitle">勉強時間を記録して、計画を着実に進めよう</p>
-                    </div>
-                </div>
-            </header>
-
-            <main>
-                <section class="quick-actions" aria-label="主な操作">
-                    <button id="btn-log-time" class="action-btn fade-in-on-load-2"
-                        aria-controls="log-time-modal">勉強時間を記録</button>
-                    <button id="btn-view-schedule" class="action-btn toggle-button fade-in-on-load-2"
-                        aria-controls="pdfViewer" aria-expanded="false">計画表を見る</button>
-                    <button id="btn-toggle-video" class="action-btn toggle-button fade-in-on-load-2"
-                        aria-controls="videoPlayer" aria-expanded="false">動画を再生</button>
-
-
-
-                </section>
-
-                <section style="padding:0 16px">
-                    <div id="stats">
-                        <div id="total-time">合計学習時間: 0 分</div>
-                    </div>
-                    <div id="pdfViewer" class="pdf-wrapper" role="region" aria-label="計画表" style="display:none;">
-                        <iframe src="docs/plan_grade2_2nd.pdf" width="100%" height="600px" style="border:none;"
-                            tabindex="-1"></iframe>
-                        <div style="margin-top:0.5rem;">
-                            <a href="docs/plan_grade2_2nd.pdf" target="_blank" rel="noopener">PDFを新しいタブで開く</a>
-                            &nbsp;|&nbsp;
-                            <a href="docs/plan_grade2_2nd.pdf" download>PDFをダウンロード</a>
-                        </div>
-                    </div>
-
-                    <div class="video-controls-area" id="videoControlsArea">
-                        <div class="video-controls-top">
-                            <button id="btn-video-prev" class="action-btn small">前の動画</button>
-                            <button id="btn-video-next" class="action-btn small">次の動画</button>
-                        </div>
-
-                        <div id="videoPlayer" class="video-wrapper" role="region" aria-label="勉強用動画"
-                            style="display:none;">
-                            <label for="videoSelect" class="visually-hidden">動画を選択</label>
-                            <select id="videoSelect" style="margin:8px 0;">
-                                <option value="4YUwV8kIYdc">勉強用BGM-生産性の上がる焚火の音</option>
-                                <option value="v-8RqKQPNak">勉強用BGM-海岸の焚火の音で集中</option>
-                                <option value="F-hhrQ3BjRI">Stardy-ポモドーロ効果で超集中</option>
-                                <option value="vr9dLvJs7VE">Stardy-α波で超集中・記憶力アップ</option>
-                                <option value="sZgHdaDvEfI">Stardy-波の音で超集中・記憶力アップ</option>
-                            </select>
-
-                            <iframe id="videoFrame" width="100%" height="315"
-                                src="https://www.youtube.com/embed/4YUwV8kIYdc?rel=0" title="勉強用動画" frameborder="0"
-                                allow="autoplay; encrypted-media" allowfullscreen tabindex="-1"></iframe>
-
-                            <div class="video-controls-bottom">
-                                <button id="btn-toggle-video" class="action-btn primary" aria-controls="videoPlayer"
-                                    aria-expanded="false">再生</button>
-                            </div>
-                        </div>
-                    </div>
-
-                </section>
-
-                <section class="timer" aria-label="学習タイマー" id="studyTimerSection">
-                    <div class="timer-display" aria-live="polite">
-                        <div class="time-large" id="timerTime">25:00</div>
-                        <div class="timer-mode" id="timerMode">ポモドーロ</div>
-                    </div>
-
-                    <div class="timer-controls">
-                        <button id="timerStart" class="action-btn">開始</button>
-                        <button id="timerPause" class="action-btn" disabled>一時停止</button>
-                        <button id="timerReset" class="action-btn">リセット</button>
-                    </div>
-
-                    <div class="timer-presets">
-                        <button class="action-btn small timer-preset" data-min="25">Pomo 25</button>
-                        <button class="action-btn small timer-preset" data-min="50">集中 50</button>
-                        <button class="action-btn small timer-preset" data-min="15">休憩 15</button>
-                    </div>
-
-                    <div class="timer-options">
-                        <label><input type="checkbox" id="timerSound" checked> 音で通知</label>
-                        <label><input type="checkbox" id="timerVibrate"> バイブ（モバイル）</label>
-                    </div>
-
-                    <div class="timer-meta">
-                        <div id="pomPhase" class="timer-phase">フェーズ: ポモドーロ</div>
-                        <div id="pomCount" class="timer-count">サイクル: 0</div>
-                    </div>
-
-                    <div class="timer-settings">
-                        <label>作業 <input id="cfgWork" type="number" min="1" value="25"> 分</label>
-                        <label>短休憩 <input id="cfgShort" type="number" min="1" value="5"> 分</label>
-                        <label>長休憩 <input id="cfgLong" type="number" min="1" value="15"> 分</label>
-                        <label>長休憩毎 <input id="cfgInterval" type="number" min="1" value="4"></label>
-                        <label><input id="cfgAutoNext" type="checkbox" checked> 自動で次に進む</label>
-                    </div>
-                </section>
-            </main>
-
-            <footer style="text-align:center;color:var(--muted);font-size:12px;margin-top:auto;padding:12px">Local mode
-                ·
-                For personal use</footer>
-        </div>
-
-        <!-- Modals -->
-        <div id="log-time-modal" class="modal" role="dialog" aria-hidden="true" aria-labelledby="log-time-title">
+        <!-- モーダルは body 末尾に配置 -->
+        <div
+            id="log-time-modal"
+            class="modal"
+            role="dialog"
+            aria-hidden="true"
+            aria-labelledby="log-time-title"
+        >
             <div class="modal-panel">
                 <h2 id="log-time-title">勉強時間を記録</h2>
-                <label style="display:block;margin-top:8px">科目
-                    <select id="subject-select" style="width:100%;padding:8px;margin-top:6px">
+                <label style="display: block; margin-top: 8px"
+                    >科目
+                    <select
+                        id="subject-select"
+                        style="width: 100%; padding: 8px; margin-top: 6px"
+                    >
                         <option>数学</option>
                         <option>英語</option>
                         <option>国語</option>
                         <option>理科</option>
                     </select>
                 </label>
-                <label style="display:block;margin-top:8px">時間（分）
-                    <input id="study-minutes" type="number" min="1" value="30"
-                        style="width:100%;padding:8px;margin-top:6px">
+                <label style="display: block; margin-top: 8px"
+                    >時間（分）
+                    <input
+                        id="study-minutes"
+                        type="number"
+                        min="1"
+                        value="30"
+                        style="width: 100%; padding: 8px; margin-top: 6px"
+                    />
                 </label>
                 <div class="modal-actions">
                     <button id="save-time" class="btn primary">保存</button>
-                    <button class="btn" data-action="close-modal">キャンセル</button>
+                    <button class="btn" data-action="close-modal">
+                        キャンセル
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div id="schedule-modal" class="modal" role="dialog" aria-hidden="true" aria-labelledby="schedule-title">
+        <div
+            id="schedule-modal"
+            class="modal"
+            role="dialog"
+            aria-hidden="true"
+            aria-labelledby="schedule-title"
+        >
             <div class="modal-panel">
                 <h2 id="schedule-title">計画表</h2>
-                <div id="schedule-content" style="margin-top:10px;max-height:50vh;overflow:auto"></div>
+                <div
+                    id="schedule-content"
+                    style="margin-top: 10px; max-height: 50vh; overflow: auto"
+                ></div>
                 <div class="modal-actions">
-                    <button class="btn" data-action="close-modal">閉じる</button>
+                    <button class="btn" data-action="close-modal">
+                        閉じる
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
+    </body>
 
-    <!-- Scripts -->
-    <script src="functions.js" defer></script>
-</body>
-
+    <script src="js/functions.js" defer></script>
+    <script src="js/tabs.js" defer></script>
 </html>
