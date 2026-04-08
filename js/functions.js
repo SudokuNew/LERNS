@@ -346,3 +346,10 @@ if ('serviceWorker' in navigator) {
 
     // 注意: onTimerFinished を使うには既存タイマーモジュールの完了ルートで onTimerFinished() を呼ぶように統合してください。
 })();
+
+document.addEventListener("DOMContentLoaded", () => {
+  const startBtn = document.getElementById("start");
+  if (startBtn) {
+    startBtn.addEventListener("click", startTimer);
+  }
+});
