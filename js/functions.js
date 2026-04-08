@@ -109,62 +109,51 @@ if ('serviceWorker' in navigator) {
             frame.src = `https://www.youtube.com/embed/${id}?rel=0&autoplay=1`;
         }
 
-        // 前・次ボタン
-        btnPrev.addEventListener('click', () => {
-            const idx = select.selectedIndex - 1;
-            setVideoByIndex(idx);
-        });
-
-        btnNext.addEventListener('click', () => {
-            const idx = select.selectedIndex + 1;
-            setVideoByIndex(idx);
-        });
-
-        // select で選んだら即切替（自動再生）
-        select.addEventListener('change', () => {
-            const id = select.value;
-            frame.src = `https://www.youtube.com/embed/${id}?rel=0&autoplay=1`;
-        });
-
-        // 再生ボタン（下部）
-        btnToggle.addEventListener('click', () => {
-            const isHidden = window.getComputedStyle(playerWrapper).display === 'none';
-            if (isHidden) {
-                playerWrapper.style.display = 'block';
-                btnToggle.textContent = '閉じる';
-                btnToggle.setAttribute('aria-expanded', 'true');
-                // フォーカスを iframe に移す（任意）
-                frame.focus();
-            } else {
-                playerWrapper.style.display = 'none';
-                btnToggle.textContent = '再生';
-                btnToggle.setAttribute('aria-expanded', 'false');
-                // 再生停止のため iframe をリセット（任意）
-                frame.src = '';
-                // 初期srcに戻しておく（次回表示時に select の選択を反映）
-                setTimeout(() => {
-                    const id = select.value;
-                    frame.src = `https://www.youtube.com/embed/${id}?rel=0`;
-                }, 0);
-            }
-        });
-
-        function renderSchedule() {
-            const container = document.getElementById('schedule-content');
-            const logs = readLogs();
-            if (logs.length === 0) {
-                container.innerHTML = '<p>記録がありません</p>';
-                return;
-            }
-            const list = logs.map(l => {
-                const t = new Date(l.at);
-                return `<div style="padding:8px;border-bottom:1px solid #eee"><strong>${l.subject}</strong> — ${l.minutes} 分<div style="font-size:12px;color:#666">${t.toLocaleString()}</div></div>`;
-            }).join('');
-            container.innerHTML = list;
+         // 前ボタン
+        if (btnPrev && select) {
+            btnPrev.addEventListener('click', () => {
+                const idx = select.selectedIndex - 1;
+                setVideoByIndex(idx);
+            });
         }
-    });
-})();
 
+        // 次ボタン
+        if (btnNext && select) {
+            btnNext.addEventListener('click', () => {
+                const idx = select.selectedIndex + 1;
+                setVideoByIndex(idx);
+            });
+        }
+
+        // セレクト
+        if (select && frame) {
+            select.addEventListener('change', () => {
+                const id = select.value;
+                frame.src = `https://www.youtube.com/embed/${id}?rel=0&autoplay=1`;
+            });
+        }
+
+        // トグル
+        if (btnToggle && playerWrapper && frame && select) {
+            btnToggle.addEventListener('click', () => {
+                const isHidden = window.getComputedStyle(playerWrapper).display === 'none';
+                if (isHidden) {
+                    playerWrapper.style.display = 'block';
+                    btnToggle.textContent = '閉じる';
+                    btnToggle.setAttribute('aria-expanded', 'true');
+                    frame.focus();
+                } else {
+                    playerWrapper.style.display = 'none';
+                    btnToggle.textContent = '再生';
+                    btnToggle.setAttribute('aria-expanded', 'false');
+                    frame.src = '';
+                    setTimeout(() => {
+                        const id = select.value;
+                        frame.src = `https://www.youtube.com/embed/${id}?rel=0`;
+                    }, 0);
+                }
+            });
+        }
 /* Intro video overlay logic: try autoplay muted, allow skip/unmute, show only once */
 (function () {
     const INTRO_KEY = 'lerns_intro_shown';
