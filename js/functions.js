@@ -26,37 +26,45 @@ if ('serviceWorker' in navigator) {
         const logModal = document.getElementById('log-time-modal');
         const scheduleModal = document.getElementById('schedule-modal');
 
-        btnLog.addEventListener('click', () => openModal(logModal));
-        btnSchedule.addEventListener('click', () => {
-            const viewer = document.getElementById('pdfViewer');
-            const isHidden = window.getComputedStyle(viewer).display === 'none';
-            if (isHidden) {
-                viewer.style.display = 'block';
-                btnSchedule.textContent = '計画表を閉じる';
-                btnSchedule.setAttribute('aria-expanded', 'true');
-                viewer.querySelector('iframe')?.focus();
-            } else {
-                viewer.style.display = 'none';
-                btnSchedule.textContent = '計画表を見る';
-                btnSchedule.setAttribute('aria-expanded', 'false');
-                btnSchedule.focus();
-            }
-        });
+        if (btnLog) {
+            btnLog.addEventListener('click', () => openModal(logModal));
+        }
+
+        if (btnSchedule) {
+            btnSchedule.addEventListener('click', () => {
+                const viewer = document.getElementById('pdfViewer');
+                const isHidden = window.getComputedStyle(viewer).display === 'none';
+                if (isHidden) {
+                    viewer.style.display = 'block';
+                    btnSchedule.textContent = '計画表を閉じる';
+                    btnSchedule.setAttribute('aria-expanded', 'true');
+                    viewer.querySelector('iframe')?.focus();
+                } else {
+                    viewer.style.display = 'none';
+                    btnSchedule.textContent = '計画表を見る';
+                    btnSchedule.setAttribute('aria-expanded', 'false');
+                    btnSchedule.focus();
+                }
+            });
+        }
 
 
         document.querySelectorAll('[data-action="close-modal"]').forEach(b => {
             b.addEventListener('click', e => closeModal(e.target.closest('.modal')));
         });
 
-        document.getElementById('save-time').addEventListener('click', () => {
-            const subject = document.getElementById('subject-select').value;
-            const minutes = parseInt(document.getElementById('study-minutes').value, 10) || 0;
-            const logs = readLogs();
-            logs.push({ subject, minutes, at: new Date().toISOString() });
-            writeLogs(logs);
-            alert('保存しました');
-            closeModal(logModal);
-        });
+        const saveBtn = document.getElementById('save-time');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
+                const subject = document.getElementById('subject-select').value;
+                const minutes = parseInt(document.getElementById('study-minutes').value, 10) || 0;
+                const logs = readLogs();
+                logs.push({ subject, minutes, at: new Date().toISOString() });
+                writeLogs(logs);
+                alert('保存しました');
+                closeModal(logModal);
+            });
+        }
 
         document.addEventListener('DOMContentLoaded', function () {
             // 既存処理...
