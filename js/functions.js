@@ -68,3 +68,87 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
+// ===== ポモドーロタイマー（既存HTML対応）=====
+
+let timerInterval = null;
+let remaining = 25 * 60;
+let isRunning = false;
+
+const display = document.getElementById("timerTime");
+const startBtn = document.getElementById("timerStart");
+const pauseBtn = document.getElementById("timerPause");
+const resetBtn = document.getElementById("timerReset");
+
+// 通知許可
+if ("Notification" in window && Notification.permission !== "granted") {
+    Notification.requestPermission();
+}
+
+// 表示更新
+function updateDisplay() {
+    const m = String(Math.floor(remaining / 60)).padStart(2, "0");
+    const s = String(remaining % 60).padStart(2, "0");
+    if (display) display.textContent = `${m}:${s}`;
+}
+
+// 開始
+function startTimer() {
+    if (isRunning) return;
+
+    isRunning = true;
+    startBtn.disabled = true;
+    pauseBtn.disabled = false;
+
+    timerInterval = setInterval(() => {
+        remaining--;
+        updateDisplay();
+
+        if (remaining <= 0) {
+            clearInterval(timerInterval);
+            isRunning = false;
+
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+
+            // 🔔 通知
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification("ポモドーロ終了！", {
+                    body: "休憩しましょう！"
+                });
+            } else {
+                alert("ポモドーロ終了！");
+            }
+        }
+    }, 1000);
+}
+
+// 一時停止
+function pauseTimer() {
+    clearInterval(timerInterval);
+    isRunning = false;
+
+    startBtn.disabled = false;
+    pauseBtn.disabled = true;
+}
+
+// リセット
+function resetTimer() {
+    clearInterval(timerInterval);
+    isRunning = false;
+
+    remaining = 25 * 60;
+    updateDisplay();
+
+    startBtn.disabled = false;
+    pauseBtn.disabled = true;
+}
+
+// ボタン接続
+document.addEventListener("DOMContentLoaded", () => {
+    startBtn?.addEventListener("click", startTimer);
+    pauseBtn?.addEventListener("click", pauseTimer);
+    resetBtn?.addEventListener("click", resetTimer);
+
+    updateDisplay();
+});
