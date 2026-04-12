@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    // ===== 学習ログ =====
     const LOG_KEY = 'lerns_logs';
 
     function readLogs() {
@@ -61,19 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ===== スタート =====
-    const startBtn = document.getElementById('start');
-    if (startBtn && typeof startTimer === 'function') {
-        startBtn.addEventListener('click', startTimer);
-    }
-
-});
-
-// ===== ポモドーロタイマー（修正版）=====
-document.addEventListener("DOMContentLoaded", () => {
-
+    // ===== ポモドーロタイマー（円形）=====
     let timerInterval = null;
-    let remaining = 25 * 60;
+    let totalTime = 25 * 60;
+    let remaining = totalTime;
     let isRunning = false;
 
     const display = document.getElementById("timerTime");
@@ -81,16 +73,38 @@ document.addEventListener("DOMContentLoaded", () => {
     const pauseBtn = document.getElementById("timerPause");
     const resetBtn = document.getElementById("timerReset");
 
+    // 🔵 円形リング
+    const circle = document.getElementById("progressCircle");
+    const radius = 90;
+    const circumference = 2 * Math.PI * radius;
+
+    if (circle) {
+        circle.style.strokeDasharray = circumference;
+        circle.style.strokeDashoffset = 0;
+    }
+
     // 通知許可
     if ("Notification" in window && Notification.permission !== "granted") {
         Notification.requestPermission();
     }
 
-    // 表示更新
+    // 表示更新（時間＋リング）
     function updateDisplay() {
         const m = String(Math.floor(remaining / 60)).padStart(2, "0");
         const s = String(remaining % 60).padStart(2, "0");
+
         if (display) display.textContent = `${m}:${s}`;
+
+        if (circle) {
+            const progress = remaining / totalTime;
+            const offset = circumference * (1 - progress);
+            circle.style.strokeDashoffset = offset;
+
+            // 色変化（おまけ）
+            if (progress < 0.3) circle.style.stroke = "red";
+            else if (progress < 0.6) circle.style.stroke = "orange";
+            else circle.style.stroke = "#4caf50";
+        }
     }
 
     // 開始
@@ -137,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
         clearInterval(timerInterval);
         isRunning = false;
 
-        remaining = 25 * 60;
+        remaining = totalTime;
         updateDisplay();
 
         startBtn.disabled = false;
