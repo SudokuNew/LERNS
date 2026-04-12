@@ -128,9 +128,18 @@
                             id="studyTimerSection"
                         >
                             <div class="timer-display" aria-live="polite">
-                                <div class="time-large" id="timerTime">
-                                    25:00
-                                </div>
+                            <div class="timer-circle">
+                                <svg width="200" height="200">
+                                    <!-- 背景 -->
+                                    <circle cx="100" cy="100" r="90" stroke="#eee" stroke-width="10" fill="none" />
+                                    <!-- 進捗 -->
+                                    <circle id="progressCircle" cx="100" cy="100" r="90" stroke="#4caf50"
+                                        stroke-width="10" fill="none" stroke-linecap="round"
+                                        transform="rotate(-90 100 100)" />
+                                </svg>
+
+                                <div class="timer-text" id="timerTime">25:00</div>
+                            </div>
                                 <div class="timer-mode" id="timerMode">
                                     ポモドーロ
                                 </div>
