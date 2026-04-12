@@ -443,3 +443,7 @@ body {
 circle {
     transition: stroke-dashoffset 1s linear;
 }
+
+#progressRing {
+    transform: rotate(180deg);
+}
