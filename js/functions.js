@@ -66,31 +66,6 @@ if ('serviceWorker' in navigator) {
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            // 既存処理...
-            const btnSchedule = document.getElementById('btn-view-schedule');
-
-            // PDF表示の開閉（トグル）
-            btnSchedule.addEventListener('click', () => {
-                const viewer = document.getElementById('pdfViewer');
-                const isHidden = window.getComputedStyle(viewer).display === 'none';
-                if (isHidden) {
-                    viewer.style.display = 'block';
-                    btnSchedule.textContent = '計画表を閉じる';
-                    btnSchedule.setAttribute('aria-expanded', 'true');
-                    viewer.querySelector('iframe')?.focus();
-                } else {
-                    viewer.style.display = 'none';
-                    btnSchedule.textContent = '計画表を見る';
-                    btnSchedule.setAttribute('aria-expanded', 'false');
-                    btnSchedule.focus();
-                }
-            });
-
-            // 既存の btnSchedule に対するモーダルを開く処理があれば削除または無効化してください
-            // 例: btnSchedule.addEventListener('click', () => { renderSchedule(); openModal(scheduleModal); });
-        });
-
         // 要素参照
         const btnPrev = document.getElementById('btn-video-prev');
         const btnNext = document.getElementById('btn-video-next');
