@@ -325,3 +325,4 @@ document.addEventListener("DOMContentLoaded", () => {
     startBtn.addEventListener("click", startTimer);
   }
 });
+})(); 
