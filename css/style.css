@@ -439,3 +439,7 @@ body {
     font-size: 2rem;
     font-weight: bold;
 }
+
+circle {
+    transition: stroke-dashoffset 1s linear;
+}
