@@ -13,7 +13,7 @@ const KOTOWAZA_LIST = [
         text: '雲外蒼天',
         yomi: 'うんがいそうてん',
         meaning: '苦難の雲を乗り越えた先に、青く澄み渡る空が広がる',
-        image: null, // 例: "assets/dragon.jpg" に変更可能
+        image: "assets/Dragons.webp", // 例: "assets/dragon.jpg" に変更可能
     },
     {
         text: '一念発起',
