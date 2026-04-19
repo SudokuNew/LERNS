@@ -20,6 +20,7 @@
         />
         <link rel="stylesheet" href="css/style.css" />
         <link rel="stylesheet" href="css/tabs.css" />
+        <link rel="stylesheet" href="css/kotowaza.css" />
     </head>
 
     <body>
@@ -116,6 +117,31 @@
                         aria-labelledby="tab-home"
                         class="fade-in-on-scroll visible"
                     >
+                    <!-- 四字熟語・ことわざカード -->
+                    <div class="kotowaza-card kotowaza-default-bg" id="kotowaza-card" aria-label="今日の四字熟語">
+
+                        <!-- 前へボタン -->
+                        <button class="kotowaza-nav" id="kotowaza-prev" aria-label="前の熟語">
+                            &#8249;
+                        </button>
+
+                        <!-- メインテキストエリア -->
+                        <div class="kotowaza-content">
+                            <p id="kotowaza-text" class="kotowaza-fade-in">雲外蒼天</p>
+                            <p id="kotowaza-yomi" class="kotowaza-fade-in">うんがいそうてん</p>
+                            <p id="kotowaza-meaning" class="kotowaza-fade-in">苦難の雲を乗り越えた先に、青く澄み渡る空が広がる</p>
+                        </div>
+
+                        <!-- 次へボタン -->
+                        <button class="kotowaza-nav" id="kotowaza-next" aria-label="次の熟語">
+                            &#8250;
+                        </button>
+
+                        <!-- ページ番号 -->
+                        <span class="kotowaza-footer" id="kotowaza-indicator">1 / 10</span>
+
+                    </div>
+                        
                         <!-- 合計時間表示（Stats） -->
                         <div id="stats" style="margin-bottom: 16px">
                             <div id="total-time">合計学習時間: 0 分</div>
@@ -384,4 +410,5 @@
 
     <script src="js/functions.js" defer></script>
     <script src="js/tabs.js" defer></script>
+    <script src="js/kotowaza.js" defer></script>
 </html>
