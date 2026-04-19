@@ -16,10 +16,10 @@ const KOTOWAZA_LIST = [
         image: "assets/Dragons.webp", // 例: "assets/dragon.jpg" に変更可能
     },
     {
-        text: '一念発起',
-        yomi: 'いちねんほっき',
-        meaning: 'ある決意のもと、強い意志で新たなことを始めること',
-        image: null,
+        text: '一陽来復',
+        yomi: 'いちようらいふく',
+        meaning: '冬の後、必ず春は訪れる',
+        image: "assets/Sunrise.webp",
     },
     {
         text: '不撓不屈',
