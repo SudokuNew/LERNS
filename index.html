@@ -20,6 +20,8 @@
         />
         <link rel="stylesheet" href="css/style.css" />
         <link rel="stylesheet" href="css/tabs.css" />
+        <link rel="stylesheet" href="css/kotowaza.css" />
+        <link rel="stylesheet" href="css/timer.css" />
     </head>
 
     <body>
@@ -116,50 +118,137 @@
                         aria-labelledby="tab-home"
                         class="fade-in-on-scroll visible"
                     >
+                    <!-- 四字熟語・ことわざカード -->
+                    <div class="kotowaza-card kotowaza-default-bg" id="kotowaza-card" aria-label="今日の四字熟語">
+
+                        <!-- 前へボタン -->
+                        <button class="kotowaza-nav" id="kotowaza-prev" aria-label="前の熟語">
+                            &#8249;
+                        </button>
+
+                        <!-- メインテキストエリア -->
+                        <div class="kotowaza-content">
+                            <p id="kotowaza-text" class="kotowaza-fade-in">雲外蒼天</p>
+                            <p id="kotowaza-yomi" class="kotowaza-fade-in">うんがいそうてん</p>
+                            <p id="kotowaza-meaning" class="kotowaza-fade-in">苦難の雲を乗り越えた先に、青く澄み渡る空が広がる</p>
+                        </div>
+
+                        <!-- 次へボタン -->
+                        <button class="kotowaza-nav" id="kotowaza-next" aria-label="次の熟語">
+                            &#8250;
+                        </button>
+
+                        <!-- ページ番号 -->
+                        <span class="kotowaza-footer" id="kotowaza-indicator">1 / 10</span>
+
+                    </div>
+                        
                         <!-- 合計時間表示（Stats） -->
                         <div id="stats" style="margin-bottom: 16px">
                             <div id="total-time">合計学習時間: 0 分</div>
                         </div>
 
                         <!-- 学習タイマー -->
-                        <section
-                            class="timer"
-                            aria-label="学習タイマー"
-                            id="studyTimerSection"
-                        >
-                            <div class="timer-display" aria-live="polite">
-                            <div class="timer-circle">
-                                <svg width="200" height="200">
-                                    <!-- 背景 -->
-                                    <circle cx="100" cy="100" r="90" stroke="#eee" stroke-width="10" fill="none" />
-                                    <!-- 進捗 -->
-                                    <circle id="progressCircle" cx="100" cy="100" r="90" stroke="#4caf50"
-                                        stroke-width="10" fill="none" stroke-linecap="round"
-                                        transform="rotate(-90 100 100)" />
-                                </svg>
+                    <div class="timer-widget">
 
-                                <div class="timer-text" id="timerTime">25:00</div>
+                        <!-- ── ピルタブ ── -->
+                        <div class="timer-tabs-header">
+                            <div class="timer-pill-track" id="timer-pill-track">
+                                <div id="timer-pill-ind"></div>
+                                <button class="timer-tab active" data-idx="0">ポモドーロ</button>
+                                <button class="timer-tab" data-idx="1">タイマー</button>
+                                <button class="timer-tab" data-idx="2">ストップウォッチ</button>
                             </div>
-                                <div class="timer-mode" id="timerMode">
-                                    ポモドーロ
+                        </div>
+
+                        <!-- ── スライドビューポート ── -->
+                        <div class="timer-viewport" id="timer-viewport">
+                            <div class="timer-track" id="timer-track">
+
+                                <!-- ① ポモドーロ -->
+                                <div class="timer-panel">
+                                    <div class="timer-ring-wrap">
+                                        <svg width="200" height="200" viewBox="0 0 200 200"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <circle class="timer-ring-bg" cx="100" cy="100" r="90" />
+                                            <circle class="timer-ring-fg" id="pomo-ring" cx="100" cy="100" r="90" />
+                                        </svg>
+                                        <div class="timer-ring-text">
+                                            <span class="timer-time-large" id="pomo-time">25:00</span>
+                                            <span class="timer-mode-label">FOCUS</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="timer-btn-row">
+                                        <button class="timer-btn primary" id="pomo-start">開始</button>
+                                        <button class="timer-btn" id="pomo-pause" disabled>一時停止</button>
+                                        <button class="timer-btn" id="pomo-reset">リセット</button>
+                                    </div>
+                                    <span class="pomo-phase-label" id="pomo-phase">集中セッション 1/4</span>
                                 </div>
-                            </div>
-                            <div class="timer-controls" style="margin-top: 8px">
-                                <button id="timerStart" class="action-btn">
-                                    開始
-                                </button>
-                                <button
-                                    id="timerPause"
-                                    class="action-btn"
-                                    disabled
-                                >
-                                    一時停止
-                                </button>
-                                <button id="timerReset" class="action-btn">
-                                    リセット
-                                </button>
-                            </div>
-                        </section>
+
+                                <!-- ② カスタムタイマー -->
+                                <div class="timer-panel">
+                                    <div class="timer-ring-wrap">
+                                        <svg width="200" height="200" viewBox="0 0 200 200"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <circle class="timer-ring-bg" cx="100" cy="100" r="90" />
+                                            <circle class="timer-ring-fg" id="ctimer-ring" cx="100" cy="100" r="90" />
+                                        </svg>
+                                        <div class="timer-ring-text">
+                                            <span class="timer-time-large" id="ctimer-time">10:00</span>
+                                            <span class="timer-mode-label">TIMER</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="ctimer-input-row" id="ctimer-inputs">
+                                        <input class="ctimer-num-input" type="number" id="ctimer-mm" value="10" min="0"
+                                            max="99" />
+                                        <span class="ctimer-colon">:</span>
+                                        <input class="ctimer-num-input" type="number" id="ctimer-ss" value="00" min="0"
+                                            max="59" />
+                                    </div>
+
+                                    <div class="timer-btn-row">
+                                        <button class="timer-btn primary" id="ctimer-start">開始</button>
+                                        <button class="timer-btn" id="ctimer-pause" disabled>一時停止</button>
+                                        <button class="timer-btn" id="ctimer-reset">リセット</button>
+                                    </div>
+                                </div>
+
+                                <!-- ③ ストップウォッチ -->
+                                <div class="timer-panel">
+                                    <div class="timer-ring-wrap">
+                                        <svg width="200" height="200" viewBox="0 0 200 200"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <circle class="timer-ring-bg" cx="100" cy="100" r="90" />
+                                            <circle class="timer-ring-fg" id="sw-ring" cx="100" cy="100" r="90" />
+                                        </svg>
+                                        <div class="timer-ring-text">
+                                            <span class="timer-time-large" id="sw-time">00:00</span>
+                                            <span class="sw-ms-display" id="sw-ms">.00</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="timer-btn-row">
+                                        <button class="timer-btn primary" id="sw-start">開始</button>
+                                        <button class="timer-btn" id="sw-lap" disabled>ラップ</button>
+                                        <button class="timer-btn" id="sw-reset">リセット</button>
+                                    </div>
+                                    <div class="sw-laps" id="sw-laps"></div>
+                                </div>
+
+                            </div><!-- /timer-track -->
+                        </div><!-- /timer-viewport -->
+
+                        <!-- ── ドットインジケーター ── -->
+                        <div class="timer-dots">
+                            <button class="timer-dot on" data-idx="0"></button>
+                            <button class="timer-dot" data-idx="1"></button>
+                            <button class="timer-dot" data-idx="2"></button>
+                        </div>
+
+                    </div><!-- /timer-widget -->
 
                         <p
                             style="
@@ -384,4 +473,6 @@
 
     <script src="js/functions.js" defer></script>
     <script src="js/tabs.js" defer></script>
+    <script src="js/kotowaza.js" defer></script>
+    <script src="js/timer.js" defer></script>
 </html>

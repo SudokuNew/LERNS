@@ -1,0 +1,213 @@
+/* =====================================================================
+   四字熟語・ことわざカード — kotowaza-card
+   style.css の末尾に追記してください
+   ===================================================================== */
+
+/* Google Fonts — 筆文字系フォント読み込み */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700;900&family=Shippori+Mincho+B1:wght@700;800&display=swap');
+
+/* =====================================================================
+   カード本体
+   ===================================================================== */
+.kotowaza-card {
+    position: relative;
+    width: 100%;
+    min-height: 160px;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+    padding: 0;
+    margin-bottom: 16px;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.28),
+        0 2px 8px rgba(0, 0, 0, 0.15);
+
+    /* 背景画像設定（JSから動的に変更される） */
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    transition: box-shadow 0.3s ease;
+}
+
+.kotowaza-card:hover {
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.35),
+        0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* --- デフォルト背景（画像なし時の墨絵グラデーション） --- */
+.kotowaza-card.kotowaza-default-bg {
+    background-image:
+        /* 墨が滲むような不均一な黒グラデーション */
+        radial-gradient(ellipse at 30% 60%, rgba(40, 20, 0, 0.6) 0%, transparent 60%),
+        radial-gradient(ellipse at 75% 30%, rgba(10, 30, 50, 0.5) 0%, transparent 55%),
+        linear-gradient(135deg,
+            #0d0d0f 0%,
+            #1a1510 25%,
+            #0f1820 50%,
+            #160d0a 75%,
+            #0a0a10 100%
+        ) !important;
+}
+
+/* --- オーバーレイ：テキスト可読性確保 --- */
+.kotowaza-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        105deg,
+        rgba(0, 0, 0, 0.72) 0%,
+        rgba(0, 0, 0, 0.50) 50%,
+        rgba(0, 0, 0, 0.30) 100%
+    );
+    z-index: 0;
+}
+
+/* --- ナビゲーションボタン（左右） --- */
+.kotowaza-nav {
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+    width: 44px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 1.3rem;
+    transition: color 0.2s, background 0.2s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.kotowaza-nav:hover,
+.kotowaza-nav:focus {
+    color: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.08);
+    outline: none;
+}
+
+.kotowaza-nav:active {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* --- メインコンテンツエリア --- */
+.kotowaza-content {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 4px;
+    text-align: center;
+    min-width: 0;
+}
+
+/* --- 四字熟語 本文 --- */
+#kotowaza-text {
+    font-family: 'Shippori Mincho B1', 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif;;
+    font-size: clamp(2rem, 8vw, 3.2rem);
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    color: #fff;
+    line-height: 1.1;
+    text-shadow:
+        0 0 30px rgba(255, 220, 100, 0.4),
+        0 2px 12px rgba(0, 0, 0, 0.8),
+        0 0 60px rgba(255, 180, 50, 0.15);
+    margin: 0 0 6px 0;
+    /* 金箔感を出す subtle gradient */
+    background: linear-gradient(
+        170deg,
+        #fff8e0 0%,
+        #ffe9a0 35%,
+        #fff 65%,
+        #ffd98a 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* --- 読み仮名 --- */
+#kotowaza-yomi {
+    font-family: 'Zen Old Mincho', 'Hiragino Mincho ProN', serif;
+    font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+    letter-spacing: 0.25em;
+    color: rgba(255, 230, 160, 0.75);
+    margin: 0 0 10px 0;
+}
+
+/* --- 意味 --- */
+#kotowaza-meaning {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', system-ui, sans-serif;
+    font-size: clamp(0.65rem, 2.2vw, 0.8rem);
+    color: rgba(255, 255, 255, 0.72);
+    line-height: 1.55;
+    max-width: 240px;
+    margin: 0;
+}
+
+/* --- ページインジケーター --- */
+.kotowaza-footer {
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    z-index: 2;
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 0.1em;
+}
+
+/* --- フェードイン アニメーション --- */
+@keyframes kotowazaFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.kotowaza-fade-in {
+    animation: kotowazaFadeIn 0.5s ease-out forwards;
+}
+
+/* --- 飾り線（掛け軸感） --- */
+.kotowaza-content::before,
+.kotowaza-content::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 210, 100, 0.5),
+        transparent
+    );
+    margin: 8px auto;
+}
+
+/* =====================================================================
+   レスポンシブ調整
+   ===================================================================== */
+@media (max-width: 360px) {
+    .kotowaza-nav {
+        width: 36px;
+    }
+
+    #kotowaza-text {
+        font-size: 1.8rem;
+    }
+}
