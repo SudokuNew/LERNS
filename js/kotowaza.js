@@ -25,7 +25,7 @@ const KOTOWAZA_LIST = [
         text: '不撓不屈',
         yomi: 'ふとうふくつ',
         meaning: 'どんな困難にも屈せず、強い意志で立ち向かうこと',
-        image: null,
+        image: "assets/Fire.webp",
     },
     {
         text: '臥薪嘗胆',
