@@ -4,7 +4,7 @@
    ===================================================================== */
 
 /* Google Fonts — 筆文字系フォント読み込み */
-@import url('https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@700;900&family=Yuji+Syuku&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700;900&family=Shippori+Mincho+B1:wght@700;800&display=swap');
 
 /* =====================================================================
    カード本体
@@ -113,7 +113,7 @@
 
 /* --- 四字熟語 本文 --- */
 #kotowaza-text {
-    font-family: 'Yuji Syuku', 'Zen Old Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+    font-family: 'Shippori Mincho B1', 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif;;
     font-size: clamp(2rem, 8vw, 3.2rem);
     font-weight: 900;
     letter-spacing: 0.15em;
