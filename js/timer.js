@@ -113,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let pItv     = null;
     let pSession = 1;
     let pIsBreak = false;
+    let pLastTick = 0;
 
     const nRing = document.getElementById('n-ring-fg');
     const nTime = document.getElementById('n-time');
@@ -172,6 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function pFinish() {
         clearInterval(pItv);
         pRun = false;
+        pLastTick = 0;
         pToggleButtons(false);
 
         if (!pIsBreak) {
@@ -196,12 +198,18 @@ document.addEventListener('DOMContentLoaded', () => {
         pToggleButtons(true);
         setActiveStatus('[ ACTIVE ] — OPERATION IN PROGRESS', '#00ff88');
         if ('Notification' in window && Notification.permission !== 'granted') Notification.requestPermission();
-        pItv = setInterval(() => { pRem--; pUpdate(); if (pRem <= 0) pFinish(); }, 1000);
+        pLastTick = Date.now();
+        pItv = setInterval(() => {
+            const now = Date.now();
+            const diff = Math.floor((now - pLastTick) / 1000);
+            if (diff > 0) { pRem -= diff; pLastTick += diff * 1000; pUpdate(); if (pRem <= 0) pFinish(); }
+        }, 250);
     }
 
     function pPause() {
         clearInterval(pItv);
         pRun = false;
+        pLastTick = 0;
         pToggleButtons(false);
         setActiveStatus('[ HOLD ] — OPERATION SUSPENDED', '#ff6600');
     }
@@ -209,6 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function pReset() {
         clearInterval(pItv);
         pRun = false;
+        pLastTick = 0;
         pIsBreak = false;
         pSession = 1;
         pTotal = POMO_WORK;
@@ -252,6 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let cRem    = 10 * 60;
     let cRun    = false;
     let cItv    = null;
+    let cLastTick = 0;
 
     const cRing = document.getElementById('c-ring-fg');
     const cTimeEl = document.getElementById('c-time');
@@ -303,8 +313,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cStartBtn) cStartBtn.disabled = true;
         if (cPauseBtn) cPauseBtn.disabled = false;
         if (cInputArea) cInputArea.style.opacity = '0.4';
+        cLastTick = Date.now();
         cItv = setInterval(() => {
-            cRem--;
+            const now = Date.now();
+            const diff = Math.floor((now - cLastTick) / 1000);
+            if (diff <= 0) return;
+            cRem -= diff;
+            cLastTick += diff * 1000;
             cUpdate();
             if (cRem <= 0) {
                 clearInterval(cItv);
@@ -322,6 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function cPause(){
         clearInterval(cItv);
         cRun = false;
+        cLastTick = 0;
         if (cStartBtn) cStartBtn.disabled = false;
         if (cPauseBtn) cPauseBtn.disabled = true;
     }
@@ -329,6 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function cReset(){
         clearInterval(cItv);
         cRun = false;
+        cLastTick = 0;
         cReadInput();
         cUpdate();
         if (cStartBtn) cStartBtn.disabled = false;
@@ -351,6 +368,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let swMs       = 0;
     let swRun      = false;
     let swItv      = null;
+    let swStartAt = 0;
+    let swElapsedBase = 0;
     let swLapStart = 0;
     let swLaps     = [];
     let swLapN     = 1;
@@ -372,6 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sweStatus = document.getElementById('swe-status');
 
     function swUpdate() {
+        if (swRun) swMs = swElapsedBase + Math.floor((Date.now() - swStartAt) / 10);
         const mins = Math.floor(swMs / 6000);
         const secs = Math.floor((swMs % 6000) / 100);
         const cs   = swMs % 100;
@@ -389,7 +409,8 @@ document.addEventListener('DOMContentLoaded', () => {
         swRun = true;
         if (swStartBtn) swStartBtn.disabled = true;
         if (swLapBtn)   swLapBtn.disabled   = false;
-        swItv = setInterval(() => { swMs++; swUpdate(); }, 10);
+        swStartAt = Date.now();
+        swItv = setInterval(swUpdate, 50);
         if (sweStatus) sweStatus.textContent='[ ACTIVE ] — TRACKING'; if (sweDot){sweDot.style.background='#00ff88';sweDot.style.boxShadow='0 0 6px #00ff88';}
         if (sweStartBtn) sweStartBtn.disabled = true; if (sweLapBtn) sweLapBtn.disabled = false;
     }
@@ -411,8 +432,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function swReset(){
         clearInterval(swItv);
+        if (swRun) swElapsedBase = swMs;
         swRun = false;
         swMs = swLapStart = 0;
+        swStartAt = 0;
+        swElapsedBase = 0;
         swLaps = [];
         swLapN = 1;
         swUpdate();
@@ -431,4 +455,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setRing(swRing, 0);
     swUpdate();
+
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+            if (pRun) { pUpdate(); }
+            if (cRun) { cUpdate(); }
+            if (swRun) { swUpdate(); }
+        }
+    });
+
 });
