@@ -1,7 +1,7 @@
 {
     "name": "LERNS",
     "short_name": "LERNS",
-    "start_url": "/",
+    "start_url": "/LERNS/",
     "display": "standalone",
     "theme_color": "#0BDAFF",
     "background_color": "#f8fbff",
