@@ -169,3 +169,9 @@
     background: #f6fbff;
     cursor: pointer;
 }
+
+#tab-todo { background-image: url("../icons/icon_todo_32.svg"); }
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    #tab-todo { background-image: url("../icons/icon_todo_32.svg"); background-size: 28px 28px; }
+}

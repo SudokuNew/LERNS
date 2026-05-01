@@ -109,6 +109,17 @@
                         >
                             <span class="visually-hidden">動画</span>
                         </button>
+                        <button
+                            class="icon-tab"
+                            id="tab-todo"
+                            role="tab"
+                            aria-selected="false"
+                            aria-controls="panel-todo"
+                            data-action="todo"
+                            title="TODO"
+                        >
+                            <span class="visually-hidden">TODO</span>
+                        </button>
                     </div>
 
                     <!-- 1. ホームパネル（新設）: タイマーと統計を表示 -->
@@ -355,6 +366,18 @@
                         </div>
                     </section>
 
+
+                    <section id="panel-todo" role="tabpanel" aria-labelledby="tab-todo" hidden>
+                        <div class="todo-card">
+                            <h3>ToDo リスト</h3>
+                            <form id="todo-form" class="todo-form">
+                                <input id="todo-input" type="text" maxlength="80" placeholder="やることを入力" required>
+                                <button type="submit">追加</button>
+                            </form>
+                            <ul id="todo-list" class="todo-list"></ul>
+                        </div>
+                    </section>
+
                     <!-- 4. 動画パネル -->
                     <section
                         id="panel-video"
@@ -499,4 +522,5 @@
     <script src="js/kotowaza.js" defer></script>
     <script src="js/timer.js" defer></script>
     <script src="js/clock.js" defer></script>
+    <script src="js/todo.js" defer></script>
 </html>
