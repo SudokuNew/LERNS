@@ -29,6 +29,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const todos = read();
     todos[i].done = cb.checked;
     write(todos); render();
+    if (cb.checked) {
+      setTimeout(() => {
+        const latest = read();
+        if (latest[i] && latest[i].done) {
+          latest.splice(i, 1);
+          write(latest);
+          render();
+        }
+      }, 500);
+    }
   });
 
   list.addEventListener('click', (e)=>{
