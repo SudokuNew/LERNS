@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const POMO_WORK  = 25 * 60;
     const POMO_BREAK =  5 * 60;
+    const POMO_CIRC = 2 * Math.PI * 80;
 
     let pTotal   = POMO_WORK;
     let pRem     = POMO_WORK;
@@ -113,34 +114,72 @@ document.addEventListener('DOMContentLoaded', () => {
     let pSession = 1;
     let pIsBreak = false;
 
-    const pRing    = document.getElementById('pomo-ring');
-    const pTimeEl  = document.getElementById('pomo-time');
+    const nRing = document.getElementById('n-ring-fg');
+    const nTime = document.getElementById('n-time');
+    const nStartBtn = document.getElementById('n-start');
+    const nPauseBtn = document.getElementById('n-pause');
+    const nResetBtn = document.getElementById('n-reset');
+
+    const eTime = document.getElementById('e-time');
+    const eCharge = document.getElementById('e-charge');
+    const eChargeV = document.getElementById('e-charge-v');
+    const eDot = document.getElementById('e-dot');
+    const eStatus = document.getElementById('e-status');
+    const eStartBtn = document.getElementById('e-start');
+    const ePauseBtn = document.getElementById('e-pause');
+    const eResetBtn = document.getElementById('e-reset');
     const pPhaseEl = document.getElementById('pomo-phase');
-    const pStartBtn = document.getElementById('pomo-start');
-    const pPauseBtn = document.getElementById('pomo-pause');
-    const pResetBtn = document.getElementById('pomo-reset');
+
+    function setActiveStatus(label, dotColor) {
+        if (eStatus) eStatus.textContent = label;
+        if (eDot) {
+            eDot.style.background = dotColor;
+            eDot.style.boxShadow = `0 0 6px ${dotColor}`;
+        }
+    }
 
     function pUpdate() {
-        if (pTimeEl)  pTimeEl.textContent = fmt(pRem);
         const ratio = pRem / pTotal;
-        setRing(pRing, ratio);
-        setRingColor(pRing, ratio);
+        const t = fmt(pRem);
+        if (nTime) nTime.textContent = t;
+        if (nRing) {
+            nRing.style.strokeDasharray = POMO_CIRC;
+            nRing.style.strokeDashoffset = POMO_CIRC * (1 - ratio);
+            nRing.style.stroke = ratio > 0.6 ? '#4caf50' : ratio > 0.3 ? 'orange' : '#e53935';
+        }
+        if (eTime) {
+            eTime.textContent = t;
+            if (ratio < 0.3) {
+                eTime.style.color = '#ff2200';
+                eTime.style.textShadow = '0 0 10px rgba(255,34,0,0.9),0 0 30px rgba(255,34,0,0.4)';
+            } else {
+                eTime.style.color = '#ff6600';
+                eTime.style.textShadow = '0 0 10px rgba(255,102,0,0.8),0 0 30px rgba(255,102,0,0.3)';
+            }
+        }
+        const pct = Math.round(ratio * 100);
+        if (eCharge) eCharge.style.width = pct + '%';
+        if (eChargeV) eChargeV.textContent = pct + '%';
+    }
+
+    function pToggleButtons(running) {
+        if (nStartBtn) nStartBtn.disabled = running;
+        if (nPauseBtn) nPauseBtn.disabled = !running;
+        if (eStartBtn) eStartBtn.disabled = running;
+        if (ePauseBtn) ePauseBtn.disabled = !running;
     }
 
     function pFinish() {
         clearInterval(pItv);
         pRun = false;
-        if (pStartBtn) pStartBtn.disabled = false;
-        if (pPauseBtn) pPauseBtn.disabled = true;
+        pToggleButtons(false);
 
         if (!pIsBreak) {
-            // 休憩へ
             pIsBreak = true;
             pTotal = POMO_BREAK;
             pRem   = POMO_BREAK;
             if (pPhaseEl) pPhaseEl.textContent = `休憩中 — セッション ${pSession}/4`;
         } else {
-            // 次の集中へ
             pIsBreak = false;
             pSession = pSession < 4 ? pSession + 1 : 1;
             pTotal = POMO_WORK;
@@ -148,48 +187,64 @@ document.addEventListener('DOMContentLoaded', () => {
             if (pPhaseEl) pPhaseEl.textContent = `集中セッション ${pSession}/4`;
         }
         pUpdate();
-
-        if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification(pIsBreak ? '休憩終了！' : 'ポモドーロ終了！', {
-                body: pIsBreak ? '次の集中セッションへ' : '5分間休憩しましょう'
-            });
-        }
+        setActiveStatus('[ HOLD ] — OPERATION SUSPENDED', '#ff6600');
     }
 
-    pStartBtn?.addEventListener('click', () => {
+    function pStart() {
         if (pRun) return;
         pRun = true;
-        if (pStartBtn) pStartBtn.disabled = true;
-        if (pPauseBtn) pPauseBtn.disabled = false;
-        if ('Notification' in window && Notification.permission !== 'granted') {
-            Notification.requestPermission();
-        }
+        pToggleButtons(true);
+        setActiveStatus('[ ACTIVE ] — OPERATION IN PROGRESS', '#00ff88');
+        if ('Notification' in window && Notification.permission !== 'granted') Notification.requestPermission();
         pItv = setInterval(() => { pRem--; pUpdate(); if (pRem <= 0) pFinish(); }, 1000);
-    });
+    }
 
-    pPauseBtn?.addEventListener('click', () => {
+    function pPause() {
         clearInterval(pItv);
         pRun = false;
-        if (pStartBtn) pStartBtn.disabled = false;
-        if (pPauseBtn) pPauseBtn.disabled = true;
-    });
+        pToggleButtons(false);
+        setActiveStatus('[ HOLD ] — OPERATION SUSPENDED', '#ff6600');
+    }
 
-    pResetBtn?.addEventListener('click', () => {
+    function pReset() {
         clearInterval(pItv);
         pRun = false;
         pIsBreak = false;
         pSession = 1;
         pTotal = POMO_WORK;
         pRem   = POMO_WORK;
-        pUpdate();
         if (pPhaseEl) pPhaseEl.textContent = `集中セッション 1/4`;
-        if (pStartBtn) pStartBtn.disabled = false;
-        if (pPauseBtn) pPauseBtn.disabled = true;
+        pToggleButtons(false);
+        setActiveStatus('[ STANDBY ] — AWAITING EXECUTIVE ORDER', '#ff6600');
+        pUpdate();
+    }
+
+    nStartBtn?.addEventListener('click', pStart);
+    nPauseBtn?.addEventListener('click', pPause);
+    nResetBtn?.addEventListener('click', pReset);
+    eStartBtn?.addEventListener('click', pStart);
+    ePauseBtn?.addEventListener('click', pPause);
+    eResetBtn?.addEventListener('click', pReset);
+
+    document.getElementById('btn-normal')?.addEventListener('click', () => {
+        document.getElementById('theme-normal')?.classList.add('active');
+        document.getElementById('theme-eva')?.classList.remove('active');
+        document.getElementById('btn-normal')?.classList.add('on');
+        document.getElementById('btn-normal')?.classList.remove('eva-on');
+        document.getElementById('btn-eva')?.classList.remove('on', 'eva-on');
+    });
+
+    document.getElementById('btn-eva')?.addEventListener('click', () => {
+        document.getElementById('theme-eva')?.classList.add('active');
+        document.getElementById('theme-normal')?.classList.remove('active');
+        document.getElementById('btn-eva')?.classList.add('eva-on');
+        document.getElementById('btn-eva')?.classList.remove('on');
+        document.getElementById('btn-normal')?.classList.remove('on', 'eva-on');
     });
 
     pUpdate();
 
-    // =====================================================================
+// =====================================================================
     // カスタムタイマー
     // =====================================================================
 

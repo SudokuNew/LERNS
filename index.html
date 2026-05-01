@@ -167,22 +167,55 @@
 
                                 <!-- ① ポモドーロ -->
                                 <div class="timer-panel">
-                                    <div class="timer-ring-wrap">
-                                        <svg width="200" height="200" viewBox="0 0 200 200"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <circle class="timer-ring-bg" cx="100" cy="100" r="90" />
-                                            <circle class="timer-ring-fg" id="pomo-ring" cx="100" cy="100" r="90" />
-                                        </svg>
-                                        <div class="timer-ring-text">
-                                            <span class="timer-time-large" id="pomo-time">25:00</span>
-                                            <span class="timer-mode-label">FOCUS</span>
+                                    <div style="padding:10px 4px; width:100%">
+                                        <div class="switcher">
+                                            <button class="sw-btn on" id="btn-normal">通常</button>
+                                            <button class="sw-btn" id="btn-eva">YASHIMA MODE</button>
                                         </div>
-                                    </div>
 
-                                    <div class="timer-btn-row">
-                                        <button class="timer-btn primary" id="pomo-start">開始</button>
-                                        <button class="timer-btn" id="pomo-pause" disabled>一時停止</button>
-                                        <button class="timer-btn" id="pomo-reset">リセット</button>
+                                        <div class="theme-normal active" id="theme-normal" style="margin-top:10px">
+                                            <div class="n-ring-wrap">
+                                                <svg width="180" height="180" viewBox="0 0 180 180">
+                                                    <circle fill="none" stroke="rgba(11,46,87,0.08)" stroke-width="10" cx="90" cy="90" r="80"/>
+                                                    <circle fill="none" stroke="#4caf50" stroke-width="10" stroke-linecap="round" cx="90" cy="90" r="80" stroke-dasharray="502.65" id="n-ring-fg" stroke-dashoffset="0"/>
+                                                </svg>
+                                                <div class="n-ring-center">
+                                                    <span class="n-time" id="n-time">25:00</span>
+                                                    <span class="n-label">FOCUS</span>
+                                                </div>
+                                            </div>
+                                            <div class="n-btns">
+                                                <button class="n-btn p" id="n-start">開始</button>
+                                                <button class="n-btn" id="n-pause" disabled>一時停止</button>
+                                                <button class="n-btn" id="n-reset">リセット</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="theme-eva" id="theme-eva" style="margin-top:10px">
+                                            <div class="eva-scanlines"></div>
+                                            <div class="eva-header">
+                                                <span class="eva-title">NERV HQ ◆ YASHIMA OPERATION ◆ TACTICAL TIMER</span>
+                                                <div class="eva-status-dot" id="e-dot"></div>
+                                            </div>
+                                            <div class="eva-body">
+                                                <div class="eva-corner tl"></div><div class="eva-corner tr"></div><div class="eva-corner bl"></div><div class="eva-corner br"></div>
+                                                <div class="eva-time-block">
+                                                    <div class="eva-time-label">◀ COUNTDOWN TIME REMAINING ▶</div>
+                                                    <div class="eva-time" id="e-time">25:00</div>
+                                                </div>
+                                                <div class="eva-gauges">
+                                                    <div class="eva-gauge-row"><span class="eva-gauge-label">CHARGE</span><div class="eva-gauge-track"><div class="eva-gauge-fill charge" id="e-charge" style="width:100%"></div></div><span class="eva-gauge-val" id="e-charge-v">100%</span></div>
+                                                    <div class="eva-gauge-row"><span class="eva-gauge-label">PWR OUTPUT</span><div class="eva-gauge-track"><div class="eva-gauge-fill power" style="width:73%"></div></div><span class="eva-gauge-val">73%</span></div>
+                                                    <div class="eva-gauge-row"><span class="eva-gauge-label">SYNC RATE</span><div class="eva-gauge-track"><div class="eva-gauge-fill sync"></div></div><span class="eva-gauge-val" style="color:#00ff88">89%</span></div>
+                                                </div>
+                                                <div class="eva-btns">
+                                                    <button class="eva-btn primary" id="e-start">EXECUTE</button>
+                                                    <button class="eva-btn" id="e-pause" disabled>HOLD</button>
+                                                    <button class="eva-btn" id="e-reset">ABORT</button>
+                                                </div>
+                                                <div class="eva-statusbar" id="e-status">[ STANDBY ] — AWAITING EXECUTIVE ORDER</div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <span class="pomo-phase-label" id="pomo-phase">集中セッション 1/4</span>
                                 </div>
