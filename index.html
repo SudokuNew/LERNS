@@ -167,75 +167,79 @@
 
                                 <!-- ① ポモドーロ -->
                                 <div class="timer-panel">
-                                    <div class="timer-ring-wrap">
-                                        <svg width="200" height="200" viewBox="0 0 200 200"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <circle class="timer-ring-bg" cx="100" cy="100" r="90" />
-                                            <circle class="timer-ring-fg" id="pomo-ring" cx="100" cy="100" r="90" />
-                                        </svg>
-                                        <div class="timer-ring-text">
-                                            <span class="timer-time-large" id="pomo-time">25:00</span>
-                                            <span class="timer-mode-label">FOCUS</span>
+                                    <div style="padding:10px 4px; width:100%">
+                                        <div class="switcher">
+                                            <button class="sw-btn on" id="btn-normal">通常</button>
+                                            <button class="sw-btn" id="btn-eva">YASHIMA MODE</button>
                                         </div>
-                                    </div>
 
-                                    <div class="timer-btn-row">
-                                        <button class="timer-btn primary" id="pomo-start">開始</button>
-                                        <button class="timer-btn" id="pomo-pause" disabled>一時停止</button>
-                                        <button class="timer-btn" id="pomo-reset">リセット</button>
+                                        <div class="theme-normal active" id="theme-normal" style="margin-top:10px">
+                                            <div class="n-ring-wrap">
+                                                <svg width="180" height="180" viewBox="0 0 180 180">
+                                                    <circle fill="none" stroke="rgba(11,46,87,0.08)" stroke-width="10" cx="90" cy="90" r="80"/>
+                                                    <circle fill="none" stroke="#4caf50" stroke-width="10" stroke-linecap="round" cx="90" cy="90" r="80" stroke-dasharray="502.65" id="n-ring-fg" stroke-dashoffset="0"/>
+                                                </svg>
+                                                <div class="n-ring-center">
+                                                    <span class="n-time" id="n-time">25:00</span>
+                                                    <span class="n-label">FOCUS</span>
+                                                </div>
+                                            </div>
+                                            <div class="n-btns">
+                                                <button class="n-btn p" id="n-start">開始</button>
+                                                <button class="n-btn" id="n-pause" disabled>一時停止</button>
+                                                <button class="n-btn" id="n-reset">リセット</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="theme-eva" id="theme-eva" style="margin-top:10px">
+                                            <div class="eva-scanlines"></div>
+                                            <div class="eva-header">
+                                                <span class="eva-title">NERV HQ ◆ YASHIMA OPERATION ◆ TACTICAL TIMER</span>
+                                                <div class="eva-status-dot" id="e-dot"></div>
+                                            </div>
+                                            <div class="eva-body">
+                                                <div class="eva-corner tl"></div><div class="eva-corner tr"></div><div class="eva-corner bl"></div><div class="eva-corner br"></div>
+                                                <div class="eva-time-block">
+                                                    <div class="eva-time-label">◀ COUNTDOWN TIME REMAINING ▶</div>
+                                                    <div class="eva-time" id="e-time">25:00</div>
+                                                </div>
+                                                <div class="eva-gauges">
+                                                    <div class="eva-gauge-row"><span class="eva-gauge-label">CHARGE</span><div class="eva-gauge-track"><div class="eva-gauge-fill charge" id="e-charge" style="width:100%"></div></div><span class="eva-gauge-val" id="e-charge-v">100%</span></div>
+                                                    <div class="eva-gauge-row"><span class="eva-gauge-label">PWR OUTPUT</span><div class="eva-gauge-track"><div class="eva-gauge-fill power" style="width:73%"></div></div><span class="eva-gauge-val">73%</span></div>
+                                                    <div class="eva-gauge-row"><span class="eva-gauge-label">SYNC RATE</span><div class="eva-gauge-track"><div class="eva-gauge-fill sync"></div></div><span class="eva-gauge-val" style="color:#00ff88">89%</span></div>
+                                                </div>
+                                                <div class="eva-btns">
+                                                    <button class="eva-btn primary" id="e-start">EXECUTE</button>
+                                                    <button class="eva-btn" id="e-pause" disabled>HOLD</button>
+                                                    <button class="eva-btn" id="e-reset">ABORT</button>
+                                                </div>
+                                                <div class="eva-statusbar" id="e-status">[ STANDBY ] — AWAITING EXECUTIVE ORDER</div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <span class="pomo-phase-label" id="pomo-phase">集中セッション 1/4</span>
                                 </div>
 
                                 <!-- ② カスタムタイマー -->
                                 <div class="timer-panel">
-                                    <div class="timer-ring-wrap">
-                                        <svg width="200" height="200" viewBox="0 0 200 200"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <circle class="timer-ring-bg" cx="100" cy="100" r="90" />
-                                            <circle class="timer-ring-fg" id="ctimer-ring" cx="100" cy="100" r="90" />
-                                        </svg>
-                                        <div class="timer-ring-text">
-                                            <span class="timer-time-large" id="ctimer-time">10:00</span>
-                                            <span class="timer-mode-label">TIMER</span>
+                                    <div style="padding:10px 4px; width:100%">
+                                        <div class="switcher"><button class="sw-btn on" id="btn-c-normal">通常</button><button class="sw-btn" id="btn-c-eva">YASHIMA MODE</button></div>
+                                        <div class="theme-normal active" id="theme-c-normal" style="margin-top:10px">
+                                            <div class="n-ring-wrap"><svg width="180" height="180" viewBox="0 0 180 180"><circle fill="none" stroke="rgba(11,46,87,0.08)" stroke-width="10" cx="90" cy="90" r="80"/><circle fill="none" stroke="#2b82ff" stroke-width="10" stroke-linecap="round" cx="90" cy="90" r="80" stroke-dasharray="502.65" id="c-ring-fg" stroke-dashoffset="0"/></svg><div class="n-ring-center"><span class="n-time" id="c-time">10:00</span><span class="n-label">TIMER</span></div></div>
+                                            <div class="ctimer-input-row eva-input-row" id="ctimer-inputs"><input class="ctimer-num-input eva-input" type="number" id="ctimer-mm" value="10" min="0" max="99" /><span class="ctimer-colon eva-colon">:</span><input class="ctimer-num-input eva-input" type="number" id="ctimer-ss" value="00" min="0" max="59" /></div>
+                                            <div class="n-btns"><button class="n-btn p" id="ctimer-start">開始</button><button class="n-btn" id="ctimer-pause" disabled>一時停止</button><button class="n-btn" id="ctimer-reset">リセット</button></div>
                                         </div>
-                                    </div>
-
-                                    <div class="ctimer-input-row" id="ctimer-inputs">
-                                        <input class="ctimer-num-input" type="number" id="ctimer-mm" value="10" min="0"
-                                            max="99" />
-                                        <span class="ctimer-colon">:</span>
-                                        <input class="ctimer-num-input" type="number" id="ctimer-ss" value="00" min="0"
-                                            max="59" />
-                                    </div>
-
-                                    <div class="timer-btn-row">
-                                        <button class="timer-btn primary" id="ctimer-start">開始</button>
-                                        <button class="timer-btn" id="ctimer-pause" disabled>一時停止</button>
-                                        <button class="timer-btn" id="ctimer-reset">リセット</button>
+                                        <div class="theme-eva" id="theme-c-eva" style="margin-top:10px"><div class="eva-scanlines"></div><div class="eva-header"><span class="eva-title">NERV HQ ◆ AUX TIMER ◆ FIELD CONTROL</span><div class="eva-status-dot" id="ce-dot"></div></div><div class="eva-body"><div class="eva-corner tl"></div><div class="eva-corner tr"></div><div class="eva-corner bl"></div><div class="eva-corner br"></div><div class="eva-time-block"><div class="eva-time-label">◀ COUNTDOWN TIME REMAINING ▶</div><div class="eva-time" id="ce-time">10:00</div></div><div class="eva-gauges"><div class="eva-gauge-row"><span class="eva-gauge-label">CHARGE</span><div class="eva-gauge-track"><div class="eva-gauge-fill charge" id="ce-charge" style="width:100%"></div></div><span class="eva-gauge-val" id="ce-charge-v">100%</span></div></div><div class="eva-input-shell"><input class="eva-num-input" type="number" id="ce-mm" value="10" min="0" max="99"><span>:</span><input class="eva-num-input" type="number" id="ce-ss" value="00" min="0" max="59"></div><div class="eva-btns"><button class="eva-btn primary" id="ce-start">EXECUTE</button><button class="eva-btn" id="ce-pause" disabled>HOLD</button><button class="eva-btn" id="ce-reset">ABORT</button></div><div class="eva-statusbar" id="ce-status">[ STANDBY ] — AWAITING EXECUTIVE ORDER</div></div></div>
                                     </div>
                                 </div>
 
                                 <!-- ③ ストップウォッチ -->
                                 <div class="timer-panel">
-                                    <div class="timer-ring-wrap">
-                                        <svg width="200" height="200" viewBox="0 0 200 200"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <circle class="timer-ring-bg" cx="100" cy="100" r="90" />
-                                            <circle class="timer-ring-fg" id="sw-ring" cx="100" cy="100" r="90" />
-                                        </svg>
-                                        <div class="timer-ring-text">
-                                            <span class="timer-time-large" id="sw-time">00:00</span>
-                                            <span class="sw-ms-display" id="sw-ms">.00</span>
-                                        </div>
+                                    <div style="padding:10px 4px; width:100%">
+                                        <div class="switcher"><button class="sw-btn on" id="btn-sw-normal">通常</button><button class="sw-btn" id="btn-sw-eva">YASHIMA MODE</button></div>
+                                        <div class="theme-normal active" id="theme-sw-normal" style="margin-top:10px"><div class="n-ring-wrap"><svg width="180" height="180" viewBox="0 0 180 180"><circle fill="none" stroke="rgba(11,46,87,0.08)" stroke-width="10" cx="90" cy="90" r="80"/><circle fill="none" stroke="#1D9E75" stroke-width="10" stroke-linecap="round" cx="90" cy="90" r="80" stroke-dasharray="502.65" id="sw-ring-fg" stroke-dashoffset="0"/></svg><div class="n-ring-center"><span class="n-time" id="sw-time">00:00</span><span class="n-label" id="sw-ms">.00</span></div></div><div class="n-btns"><button class="n-btn p" id="sw-start">開始</button><button class="n-btn" id="sw-lap" disabled>ラップ</button><button class="n-btn" id="sw-reset">リセット</button></div><div class="sw-laps" id="sw-laps"></div></div>
+                                        <div class="theme-eva" id="theme-sw-eva" style="margin-top:10px"><div class="eva-scanlines"></div><div class="eva-header"><span class="eva-title">NERV HQ ◆ CHRONOGRAPH ◆ EVENT TRACE</span><div class="eva-status-dot" id="swe-dot"></div></div><div class="eva-body"><div class="eva-corner tl"></div><div class="eva-corner tr"></div><div class="eva-corner bl"></div><div class="eva-corner br"></div><div class="eva-time-block"><div class="eva-time-label">◀ ELAPSED TIME ▶</div><div class="eva-time" id="swe-time">00:00</div><div class="eva-time-label" id="swe-ms">.00</div></div><div class="eva-btns"><button class="eva-btn primary" id="swe-start">EXECUTE</button><button class="eva-btn" id="swe-lap" disabled>MARK</button><button class="eva-btn" id="swe-reset">ABORT</button></div><div class="sw-laps eva-laps" id="swe-laps"></div><div class="eva-statusbar" id="swe-status">[ STANDBY ] — READY FOR TRACKING</div></div></div>
                                     </div>
-
-                                    <div class="timer-btn-row">
-                                        <button class="timer-btn primary" id="sw-start">開始</button>
-                                        <button class="timer-btn" id="sw-lap" disabled>ラップ</button>
-                                        <button class="timer-btn" id="sw-reset">リセット</button>
-                                    </div>
-                                    <div class="sw-laps" id="sw-laps"></div>
                                 </div>
 
                             </div><!-- /timer-track -->
