@@ -118,6 +118,25 @@
                         aria-labelledby="tab-home"
                         class="fade-in-on-scroll visible"
                     >
+                    <div class="eva-clock-widget" id="eva-clock-widget" aria-label="現在時刻ウィジェット">
+                        <div class="eva-clock-head">
+                            <div>
+                                <p class="eva-clock-title">日本標準時</p>
+                                <p class="eva-clock-sub">Japan Standard Time / Live</p>
+                            </div>
+                            <p class="eva-clock-ampm" id="eva-ampm">AM</p>
+                        </div>
+                        <div class="eva-clock-main">
+                            <span class="eva-clock-num" id="eva-hh">00</span><span class="eva-clock-unit">時</span>
+                            <span class="eva-clock-num" id="eva-mm">00</span><span class="eva-clock-unit">分</span>
+                            <span class="eva-clock-num" id="eva-ss">00</span><span class="eva-clock-unit">秒</span>
+                        </div>
+                        <div class="eva-clock-foot">
+                            <span id="eva-date">----/--/-- ---</span>
+                            <span id="eva-zone">UTC+09:00 JST</span>
+                        </div>
+                    </div>
+
                     <!-- 四字熟語・ことわざカード -->
                     <div class="kotowaza-card kotowaza-default-bg" id="kotowaza-card" aria-label="今日の四字熟語">
 
@@ -479,4 +498,5 @@
     <script src="js/tabs.js" defer></script>
     <script src="js/kotowaza.js" defer></script>
     <script src="js/timer.js" defer></script>
+    <script src="js/clock.js" defer></script>
 </html>
