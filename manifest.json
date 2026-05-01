@@ -2,6 +2,7 @@
     "name": "LERNS",
     "short_name": "LERNS",
     "start_url": "/LERNS/",
+    "scope":"/LERNS/",
     "display": "standalone",
     "theme_color": "#0BDAFF",
     "background_color": "#f8fbff",
