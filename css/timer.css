@@ -322,3 +322,7 @@
 .eva-btn:hover{background:rgba(255,102,0,0.12);box-shadow:0 0 8px rgba(255,102,0,0.3)}.eva-btn.primary{background:rgba(255,102,0,0.18);border-color:#ff6600;box-shadow:0 0 8px rgba(255,102,0,0.2)}.eva-btn:disabled{opacity:.3;cursor:default}
 .switcher{display:flex;gap:6px;justify-content:center;padding:10px 0 0}.sw-btn{font-size:11px;padding:5px 12px;border-radius:8px;cursor:pointer;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-secondary);font-weight:500;transition:all .2s}
 .sw-btn.on{background:#0b2e57;color:#fff;border-color:#0b2e57}.sw-btn.eva-on{background:#ff6600;color:#000;border-color:#ff6600;font-family:'Share Tech Mono',monospace;letter-spacing:.06em}
+.eva-input-shell{display:flex;gap:8px;align-items:center;justify-content:center;color:#ff6600;font-family:'Share Tech Mono',monospace;margin-top:4px}
+.eva-num-input{width:56px;text-align:center;background:rgba(255,102,0,0.08);border:1px solid rgba(255,102,0,0.45);border-radius:4px;color:#ffb37a;padding:6px 4px;font-family:'Orbitron',monospace}
+.eva-num-input:focus{outline:none;box-shadow:0 0 8px rgba(255,102,0,0.35)}
+.eva-laps .sw-lap-row{color:#ff9b52;border-bottom:1px solid rgba(255,102,0,0.2)}
