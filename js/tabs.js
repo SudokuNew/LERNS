@@ -40,16 +40,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // フック：data-action に従って既存の UI を表示
         const action = tab.dataset.action;
+        const pdf = document.getElementById('pdfViewer');
+        const video = document.getElementById('videoPlayer');
         if (action === 'log') {
             openModal('log-time-modal');
+            if (pdf) pdf.style.display = 'none';
+            if (video) video.style.display = 'none';
         } else if (action === 'schedule') {
-            // PDF ビューを表示（panel とは別で既存 pdfViewer を表示）
-            document.getElementById('pdfViewer').style.display = 'block';
-            // 隠す他パネル/要素があれば処理する
-            document.getElementById('videoPlayer').style.display = 'none';
+            if (pdf) pdf.style.display = 'block';
+            if (video) video.style.display = 'none';
         } else if (action === 'video') {
-            document.getElementById('videoPlayer').style.display = 'block';
-            document.getElementById('pdfViewer').style.display = 'none';
+            if (video) video.style.display = 'block';
+            if (pdf) pdf.style.display = 'none';
+        } else {
+            if (pdf) pdf.style.display = 'none';
+            if (video) video.style.display = 'none';
         }
     }
 
