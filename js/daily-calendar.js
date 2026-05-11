@@ -15,10 +15,19 @@
         return new Date(utc + 9 * 60 * 60000);
     };
 
+    const seasonByMonth = (m) => {
+        if (m >= 3 && m <= 5) return 'spring';
+        if (m >= 6 && m <= 8) return 'summer';
+        if (m >= 9 && m <= 11) return 'autumn';
+        return 'winter';
+    };
+
     const render = (date) => {
-        monthEl.textContent = `${date.getMonth() + 1}月`;
+        const month = date.getMonth() + 1;
+        monthEl.textContent = `${month}月`;
         dayEl.textContent = `${date.getDate()}`;
         weekdayEl.textContent = weekdays[date.getDay()];
+        wrap.dataset.season = seasonByMonth(month);
     };
 
     const flipPage = () => {
@@ -33,24 +42,11 @@
     };
 
     const openingAnimation = () => {
-        const now = getJstNow();
-        const day = now.getDate();
-        let c = 0;
-        const run = () => {
-            if (c >= Math.min(day, 12)) {
-                render(now);
-                cover.style.display = 'none';
-                wrap.classList.remove('is-opening', 'fast');
-                return;
-            }
-            wrap.classList.add('is-opening', 'fast');
-            setTimeout(() => {
-                wrap.classList.remove('is-opening', 'fast');
-                c += 1;
-                setTimeout(run, 35);
-            }, 120);
-        };
-        run();
+        wrap.classList.add('is-opening');
+        setTimeout(() => {
+            wrap.classList.remove('is-opening');
+            cover.style.display = 'none';
+        }, 620);
     };
 
     const scheduleNextFlip = () => {
