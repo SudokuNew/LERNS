@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lerns-v2';
+const CACHE_NAME = 'lerns-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -12,6 +12,7 @@ const ASSETS = [
   './js/timer.js',
   './js/kotowaza.js',
   './js/clock.js',
+  './js/daily-calendar.js',
   './js/todo.js',
   './icons/lerns-192.png',
   './icons/lerns-512.png'
