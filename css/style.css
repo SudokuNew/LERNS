@@ -496,3 +496,18 @@ circle {
 .daily-calendar.is-opening .dc-cover,.daily-calendar.is-flipping .dc-page { animation: dcFlip 620ms cubic-bezier(0.4, 0, 0.2, 1); }
 @keyframes dcFlip { 0% { transform: rotateX(0deg); opacity: 1; } 100% { transform: rotateX(-110deg); opacity: 0; } }
 
+
+/* ===== Spotify Playlist Embed ===== */
+.spotify-card {
+    margin: 10px 0 16px;
+    border-radius: 16px;
+    background: rgba(11, 46, 87, 0.08);
+    border: 1px solid rgba(11, 46, 87, 0.12);
+    box-shadow: 0 8px 24px rgba(11, 46, 87, 0.08);
+    overflow: hidden;
+}
+
+.spotify-card iframe {
+    display: block;
+    border: 0;
+}

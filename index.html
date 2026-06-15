@@ -129,6 +129,18 @@
                         aria-labelledby="tab-home"
                         class="fade-in-on-scroll visible"
                     >
+                    <!-- 日めくりカレンダー -->
+                    <section class="daily-calendar" id="daily-calendar" aria-label="日めくりカレンダー">
+                        <div class="dc-rings" aria-hidden="true"></div>
+                        <div class="dc-cover" id="dc-cover">LERNS OPERATION CALENDAR</div>
+                        <div class="dc-page" id="dc-page">
+                            <p class="dc-month" id="dc-month">--</p>
+                            <p class="dc-day" id="dc-day">--</p>
+                            <p class="dc-weekday" id="dc-weekday">---</p>
+                            <p class="dc-sub" id="dc-sub">TARGET DATE / JST</p>
+                        </div>
+                    </section>
+
                     <div class="eva-clock-widget" id="eva-clock-widget" aria-label="現在時刻ウィジェット">
                         <div class="eva-clock-head">
                             <div>
@@ -148,16 +160,20 @@
                         </div>
                     </div>
 
-                    <!-- 日めくりカレンダー -->
-                    <section class="daily-calendar" id="daily-calendar" aria-label="日めくりカレンダー">
-                        <div class="dc-rings" aria-hidden="true"></div>
-                        <div class="dc-cover" id="dc-cover">LERNS OPERATION CALENDAR</div>
-                        <div class="dc-page" id="dc-page">
-                            <p class="dc-month" id="dc-month">--</p>
-                            <p class="dc-day" id="dc-day">--</p>
-                            <p class="dc-weekday" id="dc-weekday">---</p>
-                            <p class="dc-sub" id="dc-sub">TARGET DATE / JST</p>
-                        </div>
+                    <!-- Spotifyプレイリスト -->
+                    <section class="spotify-card" aria-label="Spotifyプレイリスト">
+                        <iframe
+                            data-testid="embed-iframe"
+                            style="border-radius:12px"
+                            src="https://open.spotify.com/embed/playlist/1BsByfi6landnJgaO1WoIu?utm_source=generator&si=1df5b908bb7e475f"
+                            width="100%"
+                            height="352"
+                            frameborder="0"
+                            allowfullscreen=""
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                            loading="lazy"
+                            title="Spotify playlist"
+                        ></iframe>
                     </section>
 
                     <!-- 四字熟語・ことわざカード -->
